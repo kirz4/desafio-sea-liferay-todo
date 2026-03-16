@@ -3,6 +3,7 @@
 
 <liferay-ui:error key="task-delete-error" message="task-delete-error" />
 <liferay-ui:error key="task-toggle-error" message="task-toggle-error" />
+<liferay-ui:error key="task-update-error" message="task-update-error" />
 
 <%@ page import="com.desafiosea.todo.model.Task" %>
 <%@ page import="java.util.List" %>
@@ -32,6 +33,11 @@ List<Task> tasks = (List<Task>)request.getAttribute("tasks");
 				- <%= task.getDescription() %>
 				- <%= task.isDone() ? LanguageUtil.get(request, "status-done") : LanguageUtil.get(request, "status-pending") %>
 
+				<portlet:renderURL var="editTaskURL">
+					<portlet:param name="mvcRenderCommandName" value="/task/edit-form" />
+					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
+				</portlet:renderURL>
+
 				<portlet:actionURL name="/task/toggle-status" var="toggleTaskStatusURL">
 					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
 				</portlet:actionURL>
@@ -42,7 +48,13 @@ List<Task> tasks = (List<Task>)request.getAttribute("tasks");
 
 				<aui:button
 					type="button"
-					value="<%= task.isDone() ? \"task-mark-pending\" : \"task-mark-done\" %>"
+					value="task-edit"
+					onClick="<%= editTaskURL.toString() %>"
+				/>
+
+				<aui:button
+					type="button"
+					value="<%= task.isDone() ? "task-mark-pending" : "task-mark-done" %>"
 					onClick="<%= toggleTaskStatusURL.toString() %>"
 				/>
 
