@@ -1,0 +1,10 @@
+Bundle-Name: todo-api
+Bundle-SymbolicName: com.desafiosea.todo.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.desafiosea.todo.exception,\
+	com.desafiosea.todo.model,\
+	com.desafiosea.todo.service,\
+	com.desafiosea.todo.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../todo-service/service.xml
