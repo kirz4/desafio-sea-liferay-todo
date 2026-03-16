@@ -33,6 +33,148 @@ public interface TaskPersistence extends BasePersistence<Task> {
 	 */
 
 	/**
+	 * Returns all the tasks where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @return the matching tasks
+	 */
+	public java.util.List<Task> findByUserId(long userId);
+
+	/**
+	 * Returns a range of all the tasks where userId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param userId the user ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @return the range of matching tasks
+	 */
+	public java.util.List<Task> findByUserId(long userId, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the tasks where userId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param userId the user ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching tasks
+	 */
+	public java.util.List<Task> findByUserId(
+		long userId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<Task>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the tasks where userId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param userId the user ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching tasks
+	 */
+	public java.util.List<Task> findByUserId(
+		long userId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<Task>
+			orderByComparator,
+		boolean useFinderCache);
+
+	/**
+	 * Returns the first task in the ordered set where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching task
+	 * @throws NoSuchTaskException if a matching task could not be found
+	 */
+	public Task findByUserId_First(
+			long userId,
+			com.liferay.portal.kernel.util.OrderByComparator<Task>
+				orderByComparator)
+		throws NoSuchTaskException;
+
+	/**
+	 * Returns the first task in the ordered set where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching task, or <code>null</code> if a matching task could not be found
+	 */
+	public Task fetchByUserId_First(
+		long userId,
+		com.liferay.portal.kernel.util.OrderByComparator<Task>
+			orderByComparator);
+
+	/**
+	 * Returns the last task in the ordered set where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching task
+	 * @throws NoSuchTaskException if a matching task could not be found
+	 */
+	public Task findByUserId_Last(
+			long userId,
+			com.liferay.portal.kernel.util.OrderByComparator<Task>
+				orderByComparator)
+		throws NoSuchTaskException;
+
+	/**
+	 * Returns the last task in the ordered set where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching task, or <code>null</code> if a matching task could not be found
+	 */
+	public Task fetchByUserId_Last(
+		long userId,
+		com.liferay.portal.kernel.util.OrderByComparator<Task>
+			orderByComparator);
+
+	/**
+	 * Returns the tasks before and after the current task in the ordered set where userId = &#63;.
+	 *
+	 * @param taskId the primary key of the current task
+	 * @param userId the user ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next task
+	 * @throws NoSuchTaskException if a task with the primary key could not be found
+	 */
+	public Task[] findByUserId_PrevAndNext(
+			long taskId, long userId,
+			com.liferay.portal.kernel.util.OrderByComparator<Task>
+				orderByComparator)
+		throws NoSuchTaskException;
+
+	/**
+	 * Removes all the tasks where userId = &#63; from the database.
+	 *
+	 * @param userId the user ID
+	 */
+	public void removeByUserId(long userId);
+
+	/**
+	 * Returns the number of tasks where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @return the number of matching tasks
+	 */
+	public int countByUserId(long userId);
+
+	/**
 	 * Caches the task in the entity cache if it is enabled.
 	 *
 	 * @param task the task
