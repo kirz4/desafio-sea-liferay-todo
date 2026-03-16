@@ -53,6 +53,10 @@ public interface TaskLocalService
 	 *
 	 * Never modify this interface directly. Add custom service methods to <code>com.desafiosea.todo.service.impl.TaskLocalServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface. Consume the task local service via injection or a <code>org.osgi.util.tracker.ServiceTracker</code>. Use {@link TaskLocalServiceUtil} if injection and service tracking are not available.
 	 */
+	public Task addTask(
+			long userId, long groupId, String title, String description,
+			boolean done)
+		throws PortalException;
 
 	/**
 	 * Adds the task to the database. Also notifies the appropriate model listeners.
@@ -115,6 +119,8 @@ public interface TaskLocalService
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	public Task deleteTask(Task task);
+
+	public Task deleteTaskById(long taskId) throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T dslQuery(DSLQuery dslQuery);
@@ -236,6 +242,9 @@ public interface TaskLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Task> getTasks(int start, int end);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Task> getTasksByUserId(long userId);
+
 	/**
 	 * Returns the number of tasks.
 	 *
@@ -243,6 +252,10 @@ public interface TaskLocalService
 	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getTasksCount();
+
+	public Task updateTask(
+			long taskId, String title, String description, boolean done)
+		throws PortalException;
 
 	/**
 	 * Updates the task in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.

@@ -1,5 +1,8 @@
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "release.portal.api"
 
+	implementation project(":modules:todo:todo-api")
+	implementation project(":modules:todo:todo-service")
+
 	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
 }

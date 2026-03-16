@@ -37,6 +37,13 @@ public class TaskLocalServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.desafiosea.todo.service.impl.TaskLocalServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static Task addTask(
+			long userId, long groupId, String title, String description,
+			boolean done)
+		throws PortalException {
+
+		return getService().addTask(userId, groupId, title, description, done);
+	}
 
 	/**
 	 * Adds the task to the database. Also notifies the appropriate model listeners.
@@ -109,6 +116,10 @@ public class TaskLocalServiceUtil {
 	 */
 	public static Task deleteTask(Task task) {
 		return getService().deleteTask(task);
+	}
+
+	public static Task deleteTaskById(long taskId) throws PortalException {
+		return getService().deleteTaskById(taskId);
 	}
 
 	public static <T> T dslQuery(DSLQuery dslQuery) {
@@ -257,6 +268,10 @@ public class TaskLocalServiceUtil {
 		return getService().getTasks(start, end);
 	}
 
+	public static List<Task> getTasksByUserId(long userId) {
+		return getService().getTasksByUserId(userId);
+	}
+
 	/**
 	 * Returns the number of tasks.
 	 *
@@ -264,6 +279,13 @@ public class TaskLocalServiceUtil {
 	 */
 	public static int getTasksCount() {
 		return getService().getTasksCount();
+	}
+
+	public static Task updateTask(
+			long taskId, String title, String description, boolean done)
+		throws PortalException {
+
+		return getService().updateTask(taskId, title, description, done);
 	}
 
 	/**

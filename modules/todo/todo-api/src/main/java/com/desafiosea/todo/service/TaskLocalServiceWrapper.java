@@ -26,6 +26,16 @@ public class TaskLocalServiceWrapper
 		_taskLocalService = taskLocalService;
 	}
 
+	@Override
+	public com.desafiosea.todo.model.Task addTask(
+			long userId, long groupId, String title, String description,
+			boolean done)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _taskLocalService.addTask(
+			userId, groupId, title, description, done);
+	}
+
 	/**
 	 * Adds the task to the database. Also notifies the appropriate model listeners.
 	 *
@@ -109,6 +119,13 @@ public class TaskLocalServiceWrapper
 		com.desafiosea.todo.model.Task task) {
 
 		return _taskLocalService.deleteTask(task);
+	}
+
+	@Override
+	public com.desafiosea.todo.model.Task deleteTaskById(long taskId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _taskLocalService.deleteTaskById(taskId);
 	}
 
 	@Override
@@ -284,6 +301,13 @@ public class TaskLocalServiceWrapper
 		return _taskLocalService.getTasks(start, end);
 	}
 
+	@Override
+	public java.util.List<com.desafiosea.todo.model.Task> getTasksByUserId(
+		long userId) {
+
+		return _taskLocalService.getTasksByUserId(userId);
+	}
+
 	/**
 	 * Returns the number of tasks.
 	 *
@@ -292,6 +316,14 @@ public class TaskLocalServiceWrapper
 	@Override
 	public int getTasksCount() {
 		return _taskLocalService.getTasksCount();
+	}
+
+	@Override
+	public com.desafiosea.todo.model.Task updateTask(
+			long taskId, String title, String description, boolean done)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _taskLocalService.updateTask(taskId, title, description, done);
 	}
 
 	/**
