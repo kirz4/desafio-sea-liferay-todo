@@ -1,0 +1,7 @@
+Bundle-Name: todo-portlet
+Bundle-SymbolicName: com.desafiosea.todo.web
+Bundle-Version: 1.0.0
+Export-Package: com.desafiosea.todo.web.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"
