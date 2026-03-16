@@ -1,10 +1,31 @@
+# Gradle
 .gradle/
 build/
 **/build/
+
+# IDE / OS
 .idea/
 .vscode/
 .DS_Store
-bundles/osgi/state/
-bundles/tomcat/work/
-bundles/tomcat/temp/
+
+# Liferay bundle e arquivos gerados
+bundles/data/
+bundles/deploy/
+bundles/elasticsearch-sidecar/
+bundles/glowroot/
+bundles/license/
 bundles/logs/
+bundles/osgi/state/
+bundles/tomcat/logs/
+bundles/tomcat/temp/
+bundles/tomcat/work/
+
+# Se não quiser versionar o servidor inteiro:
+bundles/osgi/
+bundles/tomcat/
+bundles/tools/
+bundles/routes/
+
+# Arquivos locais
+gradle-local.properties
+bundles/
