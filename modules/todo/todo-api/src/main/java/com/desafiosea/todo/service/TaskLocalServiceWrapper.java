@@ -319,6 +319,13 @@ public class TaskLocalServiceWrapper
 	}
 
 	@Override
+	public com.desafiosea.todo.model.Task toggleTaskStatus(long taskId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _taskLocalService.toggleTaskStatus(taskId);
+	}
+
+	@Override
 	public com.desafiosea.todo.model.Task updateTask(
 			long taskId, String title, String description, boolean done)
 		throws com.liferay.portal.kernel.exception.PortalException {

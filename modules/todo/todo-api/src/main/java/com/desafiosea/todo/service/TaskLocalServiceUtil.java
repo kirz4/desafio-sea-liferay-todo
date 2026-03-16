@@ -281,6 +281,10 @@ public class TaskLocalServiceUtil {
 		return getService().getTasksCount();
 	}
 
+	public static Task toggleTaskStatus(long taskId) throws PortalException {
+		return getService().toggleTaskStatus(taskId);
+	}
+
 	public static Task updateTask(
 			long taskId, String title, String description, boolean done)
 		throws PortalException {

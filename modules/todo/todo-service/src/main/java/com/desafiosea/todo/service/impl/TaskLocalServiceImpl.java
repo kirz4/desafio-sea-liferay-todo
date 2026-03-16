@@ -67,6 +67,15 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 		return deleteTask(task);
 	}
 
+	public Task toggleTaskStatus(long taskId) throws PortalException {
+	Task task = getTask(taskId);
+
+	task.setDone(!task.isDone());
+	task.setModifiedDate(new Date());
+
+	return updateTask(task);
+	}
+
 	public List<Task> getTasksByUserId(long userId) {
 		return taskPersistence.findByUserId(userId);
 	}

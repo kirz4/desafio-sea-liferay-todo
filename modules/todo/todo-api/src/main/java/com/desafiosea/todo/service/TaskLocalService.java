@@ -253,6 +253,8 @@ public interface TaskLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getTasksCount();
 
+	public Task toggleTaskStatus(long taskId) throws PortalException;
+
 	public Task updateTask(
 			long taskId, String title, String description, boolean done)
 		throws PortalException;

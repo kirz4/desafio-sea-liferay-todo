@@ -2,6 +2,7 @@
 <%@ include file="/init.jsp" %>
 
 <liferay-ui:error key="task-delete-error" message="task-delete-error" />
+<liferay-ui:error key="task-toggle-error" message="task-toggle-error" />
 
 <%@ page import="com.desafiosea.todo.model.Task" %>
 <%@ page import="java.util.List" %>
@@ -31,11 +32,25 @@ List<Task> tasks = (List<Task>)request.getAttribute("tasks");
 				- <%= task.getDescription() %>
 				- <%= task.isDone() ? LanguageUtil.get(request, "status-done") : LanguageUtil.get(request, "status-pending") %>
 
+				<portlet:actionURL name="/task/toggle-status" var="toggleTaskStatusURL">
+					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
+				</portlet:actionURL>
+
 				<portlet:actionURL name="/task/delete" var="deleteTaskURL">
 					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
 				</portlet:actionURL>
 
-				<aui:button type="button" value="task-delete" onClick="<%= deleteTaskURL.toString() %>" />
+				<aui:button
+					type="button"
+					value="<%= task.isDone() ? \"task-mark-pending\" : \"task-mark-done\" %>"
+					onClick="<%= toggleTaskStatusURL.toString() %>"
+				/>
+
+				<aui:button
+					type="button"
+					value="task-delete"
+					onClick="<%= deleteTaskURL.toString() %>"
+				/>
 			</li>
 		<% } %>
 	</ul>
