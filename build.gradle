@@ -1,1 +1,14 @@
-// Check GETTING_STARTED.md for information regarding usage.
+ext {
+	liferayPortalVersion = "7.4.3.132"
+}
+
+allprojects {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+
+		maven {
+			url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+		}
+	}
+}

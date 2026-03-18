@@ -122,10 +122,11 @@ public class TaskLocalServiceWrapper
 	}
 
 	@Override
-	public com.desafiosea.todo.model.Task deleteTaskById(long taskId)
+	public com.desafiosea.todo.model.Task deleteTaskById(
+			long userId, long taskId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _taskLocalService.deleteTaskById(taskId);
+		return _taskLocalService.deleteTaskById(userId, taskId);
 	}
 
 	@Override
@@ -319,18 +320,21 @@ public class TaskLocalServiceWrapper
 	}
 
 	@Override
-	public com.desafiosea.todo.model.Task toggleTaskStatus(long taskId)
+	public com.desafiosea.todo.model.Task toggleTaskStatus(
+			long userId, long taskId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _taskLocalService.toggleTaskStatus(taskId);
+		return _taskLocalService.toggleTaskStatus(userId, taskId);
 	}
 
 	@Override
 	public com.desafiosea.todo.model.Task updateTask(
-			long taskId, String title, String description, boolean done)
+			long userId, long taskId, String title, String description,
+			boolean done)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _taskLocalService.updateTask(taskId, title, description, done);
+		return _taskLocalService.updateTask(
+			userId, taskId, title, description, done);
 	}
 
 	/**

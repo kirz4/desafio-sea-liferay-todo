@@ -1,5 +1,13 @@
+plugins {
+	id "java-library"
+}
+
+configurations {
+	cssBuilder
+}
+
 dependencies {
-	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+	compileOnly group: "com.liferay.portal", name: "release.portal.api", version: liferayPortalVersion
 
 	implementation project(":modules:todo:todo-api")
 	implementation project(":modules:todo:todo-service")

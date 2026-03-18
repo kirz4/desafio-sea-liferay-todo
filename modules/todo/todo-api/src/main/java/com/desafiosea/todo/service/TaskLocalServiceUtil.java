@@ -118,8 +118,10 @@ public class TaskLocalServiceUtil {
 		return getService().deleteTask(task);
 	}
 
-	public static Task deleteTaskById(long taskId) throws PortalException {
-		return getService().deleteTaskById(taskId);
+	public static Task deleteTaskById(long userId, long taskId)
+		throws PortalException {
+
+		return getService().deleteTaskById(userId, taskId);
 	}
 
 	public static <T> T dslQuery(DSLQuery dslQuery) {
@@ -281,15 +283,19 @@ public class TaskLocalServiceUtil {
 		return getService().getTasksCount();
 	}
 
-	public static Task toggleTaskStatus(long taskId) throws PortalException {
-		return getService().toggleTaskStatus(taskId);
+	public static Task toggleTaskStatus(long userId, long taskId)
+		throws PortalException {
+
+		return getService().toggleTaskStatus(userId, taskId);
 	}
 
 	public static Task updateTask(
-			long taskId, String title, String description, boolean done)
+			long userId, long taskId, String title, String description,
+			boolean done)
 		throws PortalException {
 
-		return getService().updateTask(taskId, title, description, done);
+		return getService().updateTask(
+			userId, taskId, title, description, done);
 	}
 
 	/**

@@ -120,7 +120,7 @@ public interface TaskLocalService
 	@Indexable(type = IndexableType.DELETE)
 	public Task deleteTask(Task task);
 
-	public Task deleteTaskById(long taskId) throws PortalException;
+	public Task deleteTaskById(long userId, long taskId) throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T dslQuery(DSLQuery dslQuery);
@@ -253,10 +253,12 @@ public interface TaskLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getTasksCount();
 
-	public Task toggleTaskStatus(long taskId) throws PortalException;
+	public Task toggleTaskStatus(long userId, long taskId)
+		throws PortalException;
 
 	public Task updateTask(
-			long taskId, String title, String description, boolean done)
+			long userId, long taskId, String title, String description,
+			boolean done)
 		throws PortalException;
 
 	/**

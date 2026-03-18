@@ -1,15 +1,15 @@
-buildscript {
-	dependencies {
-		classpath group: "com.liferay", name: "com.liferay.gradle.plugins.workspace", version: "15.0.0"
-	}
+rootProject.name = "desafio-liferay"
 
-	repositories {
-		mavenLocal()
+include ":modules"
+include ":modules:todo"
+include ":modules:todo:todo-api"
+include ":modules:todo:todo-service"
+include ":modules:todo:todo-portlet"
+include ":modules:todo:todo-test"
 
-		maven {
-			url "https://repository-cdn.liferay.com/nexus/content/groups/public"
-		}
-	}
-}
-
-apply plugin: "com.liferay.workspace"
+project(":modules").projectDir = file("modules")
+project(":modules:todo").projectDir = file("modules/todo")
+project(":modules:todo:todo-api").projectDir = file("modules/todo/todo-api")
+project(":modules:todo:todo-service").projectDir = file("modules/todo/todo-service")
+project(":modules:todo:todo-portlet").projectDir = file("modules/todo/todo-portlet")
+project(":modules:todo:todo-test").projectDir = file("modules/todo/todo-test")
