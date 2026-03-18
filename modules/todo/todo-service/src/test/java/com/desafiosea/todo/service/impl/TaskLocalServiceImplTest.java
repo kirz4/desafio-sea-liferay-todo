@@ -70,6 +70,51 @@ public class TaskLocalServiceImplTest {
 		Assert.assertFalse(result.isDone());
 		Assert.assertEquals(500L, result.getFileEntryId());
 		Assert.assertEquals(0L, result.getParentTaskId());
+		Assert.assertNotNull(result.getCreateDate());
+		Assert.assertNotNull(result.getModifiedDate());
+	}
+
+	@Test
+	public void shouldTrimTitleAndDescriptionWhenAddingTask() throws Exception {
+		User user = Mockito.mock(User.class);
+
+		Mockito.when(userLocalService.getUser(1L)).thenReturn(user);
+		Mockito.when(user.getCompanyId()).thenReturn(200L);
+		Mockito.when(user.getFullName()).thenReturn("Lucas");
+		Mockito.when(counterLocalService.increment(Task.class.getName())).thenReturn(20L);
+
+		Task task = new TaskImpl();
+		task.setTaskId(20L);
+
+		Mockito.doReturn(task).when(taskLocalService).createTask(20L);
+		Mockito.doReturn(task).when(taskLocalService).addTask(task);
+
+		Task result = taskLocalService.addTask(
+			1L, 300L, "  Minha tarefa  ", "  Descrição  ", false, 0L);
+
+		Assert.assertEquals("Minha tarefa", result.getTitle());
+		Assert.assertEquals("Descrição", result.getDescription());
+	}
+
+	@Test
+	public void shouldNormalizeNullDescriptionWhenAddingTask() throws Exception {
+		User user = Mockito.mock(User.class);
+
+		Mockito.when(userLocalService.getUser(1L)).thenReturn(user);
+		Mockito.when(user.getCompanyId()).thenReturn(200L);
+		Mockito.when(user.getFullName()).thenReturn("Lucas");
+		Mockito.when(counterLocalService.increment(Task.class.getName())).thenReturn(21L);
+
+		Task task = new TaskImpl();
+		task.setTaskId(21L);
+
+		Mockito.doReturn(task).when(taskLocalService).createTask(21L);
+		Mockito.doReturn(task).when(taskLocalService).addTask(task);
+
+		Task result = taskLocalService.addTask(
+			1L, 300L, "Tarefa", null, false, 0L);
+
+		Assert.assertEquals("", result.getDescription());
 	}
 
 	@Test
@@ -104,6 +149,17 @@ public class TaskLocalServiceImplTest {
 		taskLocalService.addTask(1L, 300L, "ab", "Descrição", false, 0L);
 	}
 
+	@Test(expected = TaskTitleSizeException.class)
+	public void shouldThrowWhenTitleIsTooLong() throws Exception {
+		StringBuilder longTitle = new StringBuilder();
+
+		for (int i = 0; i < 101; i++) {
+			longTitle.append("a");
+		}
+
+		taskLocalService.addTask(1L, 300L, longTitle.toString(), "Descrição", false, 0L);
+	}
+
 	@Test(expected = TaskDescriptionSizeException.class)
 	public void shouldThrowWhenDescriptionIsTooLong() throws Exception {
 		StringBuilder longDescription = new StringBuilder();
@@ -136,6 +192,24 @@ public class TaskLocalServiceImplTest {
 		Assert.assertEquals("Nova descrição", result.getDescription());
 		Assert.assertTrue(result.isDone());
 		Assert.assertEquals(77L, result.getFileEntryId());
+		Assert.assertNotNull(result.getModifiedDate());
+	}
+
+	@Test
+	public void shouldNormalizeNullDescriptionWhenUpdatingTask() throws Exception {
+		Task task = new TaskImpl();
+		task.setTaskId(51L);
+		task.setUserId(1L);
+		task.setTitle("Antigo");
+		task.setDescription("Antiga");
+
+		Mockito.doReturn(task).when(taskLocalService).getTask(51L);
+		Mockito.doReturn(task).when(taskLocalService).updateTask(task);
+
+		Task result = taskLocalService.updateTask(
+			1L, 51L, "Novo título", null, false, 0L);
+
+		Assert.assertEquals("", result.getDescription());
 	}
 
 	@Test(expected = TaskPermissionException.class)
@@ -163,6 +237,35 @@ public class TaskLocalServiceImplTest {
 		Task result = taskLocalService.toggleTaskStatus(1L, 70L);
 
 		Assert.assertTrue(result.isDone());
+	}
+
+	@Test
+	public void shouldToggleTaskStatusTwice() throws Exception {
+		Task task = new TaskImpl();
+		task.setTaskId(71L);
+		task.setUserId(1L);
+		task.setDone(false);
+
+		Mockito.doReturn(task).when(taskLocalService).getTask(71L);
+		Mockito.doReturn(task).when(taskLocalService).updateTask(task);
+
+		Task firstToggle = taskLocalService.toggleTaskStatus(1L, 71L);
+		Assert.assertTrue(firstToggle.isDone());
+
+		Task secondToggle = taskLocalService.toggleTaskStatus(1L, 71L);
+		Assert.assertFalse(secondToggle.isDone());
+	}
+
+	@Test(expected = TaskPermissionException.class)
+	public void shouldNotToggleTaskFromAnotherUser() throws Exception {
+		Task task = new TaskImpl();
+		task.setTaskId(90L);
+		task.setUserId(999L);
+		task.setDone(false);
+
+		Mockito.doReturn(task).when(taskLocalService).getTask(90L);
+
+		taskLocalService.toggleTaskStatus(1L, 90L);
 	}
 
 	@Test
@@ -196,6 +299,33 @@ public class TaskLocalServiceImplTest {
 	}
 
 	@Test
+	public void shouldDeleteTaskWithoutSubtasks() throws Exception {
+		Task parent = new TaskImpl();
+		parent.setTaskId(30L);
+		parent.setUserId(1L);
+
+		Mockito.doReturn(parent).when(taskLocalService).getTask(30L);
+		Mockito.when(taskPersistence.findByU_P(1L, 30L)).thenReturn(Collections.emptyList());
+		Mockito.doReturn(parent).when(taskLocalService).deleteTask(parent);
+
+		Task result = taskLocalService.deleteTaskById(1L, 30L);
+
+		Assert.assertEquals(30L, result.getTaskId());
+		Mockito.verify(taskLocalService).deleteTask(parent);
+	}
+
+	@Test(expected = TaskPermissionException.class)
+	public void shouldNotDeleteTaskFromAnotherUser() throws Exception {
+		Task task = new TaskImpl();
+		task.setTaskId(31L);
+		task.setUserId(999L);
+
+		Mockito.doReturn(task).when(taskLocalService).getTask(31L);
+
+		taskLocalService.deleteTaskById(1L, 31L);
+	}
+
+	@Test
 	public void shouldGetTasksByUserId() {
 		List<Task> expected = Collections.singletonList(new TaskImpl());
 
@@ -215,6 +345,15 @@ public class TaskLocalServiceImplTest {
 		List<Task> result = taskLocalService.getRootTasksByUserId(1L);
 
 		Assert.assertEquals(expected, result);
+	}
+
+	@Test
+	public void shouldReturnEmptyListWhenNoRootTasksExist() {
+		Mockito.when(taskPersistence.findByU_P(1L, 0L)).thenReturn(Collections.emptyList());
+
+		List<Task> result = taskLocalService.getRootTasksByUserId(1L);
+
+		Assert.assertTrue(result.isEmpty());
 	}
 
 	@Test
