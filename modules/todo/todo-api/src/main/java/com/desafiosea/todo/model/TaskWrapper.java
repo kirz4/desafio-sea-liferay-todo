@@ -42,6 +42,8 @@ public class TaskWrapper
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
 		attributes.put("done", isDone());
+		attributes.put("fileEntryId", getFileEntryId());
+		attributes.put("parentTaskId", getParentTaskId());
 
 		return attributes;
 	}
@@ -107,6 +109,18 @@ public class TaskWrapper
 		if (done != null) {
 			setDone(done);
 		}
+
+		Long fileEntryId = (Long)attributes.get("fileEntryId");
+
+		if (fileEntryId != null) {
+			setFileEntryId(fileEntryId);
+		}
+
+		Long parentTaskId = (Long)attributes.get("parentTaskId");
+
+		if (parentTaskId != null) {
+			setParentTaskId(parentTaskId);
+		}
 	}
 
 	@Override
@@ -155,6 +169,16 @@ public class TaskWrapper
 	}
 
 	/**
+	 * Returns the file entry ID of this task.
+	 *
+	 * @return the file entry ID of this task
+	 */
+	@Override
+	public long getFileEntryId() {
+		return model.getFileEntryId();
+	}
+
+	/**
 	 * Returns the group ID of this task.
 	 *
 	 * @return the group ID of this task
@@ -172,6 +196,16 @@ public class TaskWrapper
 	@Override
 	public Date getModifiedDate() {
 		return model.getModifiedDate();
+	}
+
+	/**
+	 * Returns the parent task ID of this task.
+	 *
+	 * @return the parent task ID of this task
+	 */
+	@Override
+	public long getParentTaskId() {
+		return model.getParentTaskId();
 	}
 
 	/**
@@ -290,6 +324,16 @@ public class TaskWrapper
 	}
 
 	/**
+	 * Sets the file entry ID of this task.
+	 *
+	 * @param fileEntryId the file entry ID of this task
+	 */
+	@Override
+	public void setFileEntryId(long fileEntryId) {
+		model.setFileEntryId(fileEntryId);
+	}
+
+	/**
 	 * Sets the group ID of this task.
 	 *
 	 * @param groupId the group ID of this task
@@ -307,6 +351,16 @@ public class TaskWrapper
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
 		model.setModifiedDate(modifiedDate);
+	}
+
+	/**
+	 * Sets the parent task ID of this task.
+	 *
+	 * @param parentTaskId the parent task ID of this task
+	 */
+	@Override
+	public void setParentTaskId(long parentTaskId) {
+		model.setParentTaskId(parentTaskId);
 	}
 
 	/**

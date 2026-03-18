@@ -58,6 +58,11 @@ public interface TaskLocalService
 			boolean done, long fileEntryId)
 		throws PortalException;
 
+	public Task addTask(
+			long userId, long groupId, String title, String description,
+			boolean done, long fileEntryId, long parentTaskId)
+		throws PortalException;
+
 	/**
 	 * Adds the task to the database. Also notifies the appropriate model listeners.
 	 *
@@ -217,6 +222,12 @@ public interface TaskLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Task> getRootTasksByUserId(long userId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Task> getSubtasksByParentTaskId(long userId, long parentTaskId);
 
 	/**
 	 * Returns the task with the primary key.

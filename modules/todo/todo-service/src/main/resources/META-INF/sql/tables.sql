@@ -9,5 +9,6 @@ create table TODO_Task (
 	title VARCHAR(75) null,
 	description VARCHAR(75) null,
 	done BOOLEAN,
-	fileEntryId LONG
+	fileEntryId LONG,
+	parentTaskId LONG
 );

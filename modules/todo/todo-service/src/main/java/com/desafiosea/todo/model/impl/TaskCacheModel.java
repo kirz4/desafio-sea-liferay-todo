@@ -52,7 +52,7 @@ public class TaskCacheModel implements CacheModel<Task>, Externalizable {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(21);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("{taskId=");
 		sb.append(taskId);
@@ -74,6 +74,10 @@ public class TaskCacheModel implements CacheModel<Task>, Externalizable {
 		sb.append(description);
 		sb.append(", done=");
 		sb.append(done);
+		sb.append(", fileEntryId=");
+		sb.append(fileEntryId);
+		sb.append(", parentTaskId=");
+		sb.append(parentTaskId);
 		sb.append("}");
 
 		return sb.toString();
@@ -124,6 +128,8 @@ public class TaskCacheModel implements CacheModel<Task>, Externalizable {
 		}
 
 		taskImpl.setDone(done);
+		taskImpl.setFileEntryId(fileEntryId);
+		taskImpl.setParentTaskId(parentTaskId);
 
 		taskImpl.resetOriginalValues();
 
@@ -146,6 +152,10 @@ public class TaskCacheModel implements CacheModel<Task>, Externalizable {
 		description = objectInput.readUTF();
 
 		done = objectInput.readBoolean();
+
+		fileEntryId = objectInput.readLong();
+
+		parentTaskId = objectInput.readLong();
 	}
 
 	@Override
@@ -183,6 +193,10 @@ public class TaskCacheModel implements CacheModel<Task>, Externalizable {
 		}
 
 		objectOutput.writeBoolean(done);
+
+		objectOutput.writeLong(fileEntryId);
+
+		objectOutput.writeLong(parentTaskId);
 	}
 
 	public long taskId;
@@ -195,5 +209,7 @@ public class TaskCacheModel implements CacheModel<Task>, Externalizable {
 	public String title;
 	public String description;
 	public boolean done;
+	public long fileEntryId;
+	public long parentTaskId;
 
 }

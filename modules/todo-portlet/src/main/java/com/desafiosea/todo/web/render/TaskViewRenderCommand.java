@@ -42,14 +42,20 @@ public class TaskViewRenderCommand implements MVCRenderCommand {
 		User user = themeDisplay.getUser();
 
 		List<Task> allTasks = Collections.emptyList();
+		List<Task> rootTasks = Collections.emptyList();
 		List<Task> doneTasks = new ArrayList<>();
 		List<Task> pendingTasks = new ArrayList<>();
+
+		Map<Long, List<Task>> subtasksByParentTaskId = new HashMap<>();
 		Map<Long, String> taskImageUrls = new HashMap<>();
 
 		String filter = ParamUtil.getString(renderRequest, "filter", "all");
 
 		if (user != null) {
-			allTasks = _taskLocalService.getTasksByUserId(user.getUserId());
+			long userId = user.getUserId();
+
+			allTasks = _taskLocalService.getTasksByUserId(userId);
+			rootTasks = _taskLocalService.getRootTasksByUserId(userId);
 
 			for (Task task : allTasks) {
 				if (task.isDone()) {
@@ -73,14 +79,22 @@ public class TaskViewRenderCommand implements MVCRenderCommand {
 					}
 				}
 			}
+
+			for (Task rootTask : rootTasks) {
+				List<Task> subtasks = _taskLocalService.getSubtasksByParentTaskId(
+					userId, rootTask.getTaskId());
+
+				subtasksByParentTaskId.put(rootTask.getTaskId(), subtasks);
+			}
 		}
 
-		renderRequest.setAttribute("tasks", allTasks);
+		renderRequest.setAttribute("rootTasks", rootTasks);
+		renderRequest.setAttribute("subtasksByParentTaskId", subtasksByParentTaskId);
+		renderRequest.setAttribute("taskImageUrls", taskImageUrls);
 		renderRequest.setAttribute("totalCount", allTasks.size());
 		renderRequest.setAttribute("doneCount", doneTasks.size());
 		renderRequest.setAttribute("pendingCount", pendingTasks.size());
 		renderRequest.setAttribute("currentFilter", filter);
-		renderRequest.setAttribute("taskImageUrls", taskImageUrls);
 
 		return "/view.jsp";
 	}

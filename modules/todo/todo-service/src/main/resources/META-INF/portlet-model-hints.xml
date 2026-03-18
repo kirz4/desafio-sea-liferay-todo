@@ -13,5 +13,6 @@
 		<field name="description" type="String" />
 		<field name="done" type="boolean" />
 		<field name="fileEntryId" type="long" />
+		<field name="parentTaskId" type="long" />
 	</model>
 </model-hints>

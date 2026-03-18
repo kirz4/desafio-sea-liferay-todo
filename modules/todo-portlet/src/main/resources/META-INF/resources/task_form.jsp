@@ -22,6 +22,8 @@ String title = ParamUtil.getString(request, "title");
 String description = ParamUtil.getString(request, "description");
 String currentFilter = ParamUtil.getString(request, "filter", "all");
 
+long parentTaskId = ParamUtil.getLong(request, "parentTaskId", 0L);
+
 String doneParam = ParamUtil.getString(request, "done");
 boolean done = "true".equals(doneParam) || "on".equals(doneParam);
 
@@ -39,7 +41,14 @@ if (task != null) {
 	}
 
 	taskId = task.getTaskId();
+
+	if (parentTaskId == 0) {
+		parentTaskId = task.getParentTaskId();
+	}
 }
+
+boolean creatingSubtask = !editing && (parentTaskId > 0);
+String formTitle = editing ? "Editar Tarefa" : (creatingSubtask ? "Nova Subtarefa" : "Nova Tarefa");
 %>
 
 <portlet:actionURL name="<%= editing ? "/task/update" : "/task/add" %>" var="taskActionURL" />
@@ -50,10 +59,11 @@ if (task != null) {
 </portlet:renderURL>
 
 <div class="task-form-container">
-	<h2><%= editing ? "Editar Tarefa" : "Nova Tarefa" %></h2>
+	<h2><%= formTitle %></h2>
 
 	<aui:form action="<%= taskActionURL %>" method="post" enctype="multipart/form-data">
 		<aui:input name="filter" type="hidden" value="<%= currentFilter %>" />
+		<aui:input name="parentTaskId" type="hidden" value="<%= parentTaskId %>" />
 
 		<% if (editing) { %>
 			<aui:input name="taskId" type="hidden" value="<%= taskId %>" />
