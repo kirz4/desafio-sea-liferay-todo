@@ -240,6 +240,20 @@ public interface TaskModel extends BaseModel<Task>, GroupedModel, ShardedModel {
 	 */
 	public void setFileEntryId(long fileEntryId);
 
+	/**
+	 * Returns the parent task ID of this task.
+	 *
+	 * @return the parent task ID of this task
+	 */
+	public long getParentTaskId();
+
+	/**
+	 * Sets the parent task ID of this task.
+	 *
+	 * @param parentTaskId the parent task ID of this task
+	 */
+	public void setParentTaskId(long parentTaskId);
+
 	@Override
 	public Task cloneWithOriginalValues();
 

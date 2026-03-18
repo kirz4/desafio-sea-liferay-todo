@@ -34,6 +34,15 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 		long userId, long groupId, String title, String description,
 		boolean done, long fileEntryId) throws PortalException {
 
+		return addTask(
+			userId, groupId, title, description, done, fileEntryId, 0);
+	}
+
+	public Task addTask(
+		long userId, long groupId, String title, String description,
+		boolean done, long fileEntryId, long parentTaskId)
+		throws PortalException {
+
 		validate(title, description);
 
 		User user = _userLocalService.getUser(userId);
@@ -55,13 +64,15 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 		task.setDescription(normalizeDescription(description));
 		task.setDone(done);
 		task.setFileEntryId(fileEntryId);
+		task.setParentTaskId(parentTaskId);
 
 		return addTask(task);
 	}
 
 	public Task updateTask(
 		long userId, long taskId, String title, String description,
-		boolean done, long fileEntryId) throws PortalException {
+		boolean done, long fileEntryId)
+		throws PortalException {
 
 		validate(title, description);
 
@@ -83,6 +94,12 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 
 		validateOwnership(userId, task);
 
+		List<Task> subtasks = taskPersistence.findByU_P(userId, taskId);
+
+		for (Task subtask : subtasks) {
+			deleteTask(subtask);
+		}
+
 		return deleteTask(task);
 	}
 
@@ -101,6 +118,14 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 		return taskPersistence.findByUserId(userId);
 	}
 
+	public List<Task> getRootTasksByUserId(long userId) {
+		return taskPersistence.findByU_P(userId, 0L);
+	}
+
+	public List<Task> getSubtasksByParentTaskId(long userId, long parentTaskId) {
+		return taskPersistence.findByU_P(userId, parentTaskId);
+	}
+
 	private void validate(String title, String description) throws PortalException {
 		if (Validator.isBlank(title)) {
 			throw new TaskTitleRequiredException();
@@ -108,8 +133,8 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 
 		String normalizedTitle = title.trim();
 
-		if (normalizedTitle.length() < TITLE_MIN_LENGTH ||
-			normalizedTitle.length() > TITLE_MAX_LENGTH) {
+		if ((normalizedTitle.length() < TITLE_MIN_LENGTH) ||
+			(normalizedTitle.length() > TITLE_MAX_LENGTH)) {
 
 			throw new TaskTitleSizeException();
 		}

@@ -14,13 +14,25 @@
 		<column name="userName" type="String" />
 		<column name="createDate" type="Date" />
 		<column name="modifiedDate" type="Date" />
+
 		<column name="title" type="String" />
 		<column name="description" type="String" />
 		<column name="done" type="boolean" />
 		<column name="fileEntryId" type="long" />
 
+		<column name="parentTaskId" type="long" />
+
 		<finder name="UserId" return-type="Collection">
 			<finder-column name="userId" />
+		</finder>
+
+		<finder name="U_P" return-type="Collection">
+			<finder-column name="userId" />
+			<finder-column name="parentTaskId" />
+		</finder>
+
+		<finder name="ParentTaskId" return-type="Collection">
+			<finder-column name="parentTaskId" />
 		</finder>
 
 		<order by="asc">

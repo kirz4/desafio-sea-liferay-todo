@@ -36,6 +36,17 @@ public class TaskLocalServiceWrapper
 			userId, groupId, title, description, done, fileEntryId);
 	}
 
+	@Override
+	public com.desafiosea.todo.model.Task addTask(
+			long userId, long groupId, String title, String description,
+			boolean done, long fileEntryId, long parentTaskId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _taskLocalService.addTask(
+			userId, groupId, title, description, done, fileEntryId,
+			parentTaskId);
+	}
+
 	/**
 	 * Adds the task to the database. Also notifies the appropriate model listeners.
 	 *
@@ -268,6 +279,21 @@ public class TaskLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _taskLocalService.getPersistedModel(primaryKeyObj);
+	}
+
+	@Override
+	public java.util.List<com.desafiosea.todo.model.Task> getRootTasksByUserId(
+		long userId) {
+
+		return _taskLocalService.getRootTasksByUserId(userId);
+	}
+
+	@Override
+	public java.util.List<com.desafiosea.todo.model.Task>
+		getSubtasksByParentTaskId(long userId, long parentTaskId) {
+
+		return _taskLocalService.getSubtasksByParentTaskId(
+			userId, parentTaskId);
 	}
 
 	/**

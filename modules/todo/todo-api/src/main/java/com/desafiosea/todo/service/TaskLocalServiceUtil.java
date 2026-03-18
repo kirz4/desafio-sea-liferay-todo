@@ -46,6 +46,16 @@ public class TaskLocalServiceUtil {
 			userId, groupId, title, description, done, fileEntryId);
 	}
 
+	public static Task addTask(
+			long userId, long groupId, String title, String description,
+			boolean done, long fileEntryId, long parentTaskId)
+		throws PortalException {
+
+		return getService().addTask(
+			userId, groupId, title, description, done, fileEntryId,
+			parentTaskId);
+	}
+
 	/**
 	 * Adds the task to the database. Also notifies the appropriate model listeners.
 	 *
@@ -243,6 +253,16 @@ public class TaskLocalServiceUtil {
 		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
+	}
+
+	public static List<Task> getRootTasksByUserId(long userId) {
+		return getService().getRootTasksByUserId(userId);
+	}
+
+	public static List<Task> getSubtasksByParentTaskId(
+		long userId, long parentTaskId) {
+
+		return getService().getSubtasksByParentTaskId(userId, parentTaskId);
 	}
 
 	/**

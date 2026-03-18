@@ -269,6 +269,358 @@ public class TaskUtil {
 	}
 
 	/**
+	 * Returns all the tasks where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @return the matching tasks
+	 */
+	public static List<Task> findByU_P(long userId, long parentTaskId) {
+		return getPersistence().findByU_P(userId, parentTaskId);
+	}
+
+	/**
+	 * Returns a range of all the tasks where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @return the range of matching tasks
+	 */
+	public static List<Task> findByU_P(
+		long userId, long parentTaskId, int start, int end) {
+
+		return getPersistence().findByU_P(userId, parentTaskId, start, end);
+	}
+
+	/**
+	 * Returns an ordered range of all the tasks where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching tasks
+	 */
+	public static List<Task> findByU_P(
+		long userId, long parentTaskId, int start, int end,
+		OrderByComparator<Task> orderByComparator) {
+
+		return getPersistence().findByU_P(
+			userId, parentTaskId, start, end, orderByComparator);
+	}
+
+	/**
+	 * Returns an ordered range of all the tasks where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching tasks
+	 */
+	public static List<Task> findByU_P(
+		long userId, long parentTaskId, int start, int end,
+		OrderByComparator<Task> orderByComparator, boolean useFinderCache) {
+
+		return getPersistence().findByU_P(
+			userId, parentTaskId, start, end, orderByComparator,
+			useFinderCache);
+	}
+
+	/**
+	 * Returns the first task in the ordered set where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching task
+	 * @throws NoSuchTaskException if a matching task could not be found
+	 */
+	public static Task findByU_P_First(
+			long userId, long parentTaskId,
+			OrderByComparator<Task> orderByComparator)
+		throws com.desafiosea.todo.exception.NoSuchTaskException {
+
+		return getPersistence().findByU_P_First(
+			userId, parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the first task in the ordered set where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching task, or <code>null</code> if a matching task could not be found
+	 */
+	public static Task fetchByU_P_First(
+		long userId, long parentTaskId,
+		OrderByComparator<Task> orderByComparator) {
+
+		return getPersistence().fetchByU_P_First(
+			userId, parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the last task in the ordered set where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching task
+	 * @throws NoSuchTaskException if a matching task could not be found
+	 */
+	public static Task findByU_P_Last(
+			long userId, long parentTaskId,
+			OrderByComparator<Task> orderByComparator)
+		throws com.desafiosea.todo.exception.NoSuchTaskException {
+
+		return getPersistence().findByU_P_Last(
+			userId, parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the last task in the ordered set where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching task, or <code>null</code> if a matching task could not be found
+	 */
+	public static Task fetchByU_P_Last(
+		long userId, long parentTaskId,
+		OrderByComparator<Task> orderByComparator) {
+
+		return getPersistence().fetchByU_P_Last(
+			userId, parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the tasks before and after the current task in the ordered set where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * @param taskId the primary key of the current task
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next task
+	 * @throws NoSuchTaskException if a task with the primary key could not be found
+	 */
+	public static Task[] findByU_P_PrevAndNext(
+			long taskId, long userId, long parentTaskId,
+			OrderByComparator<Task> orderByComparator)
+		throws com.desafiosea.todo.exception.NoSuchTaskException {
+
+		return getPersistence().findByU_P_PrevAndNext(
+			taskId, userId, parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Removes all the tasks where userId = &#63; and parentTaskId = &#63; from the database.
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 */
+	public static void removeByU_P(long userId, long parentTaskId) {
+		getPersistence().removeByU_P(userId, parentTaskId);
+	}
+
+	/**
+	 * Returns the number of tasks where userId = &#63; and parentTaskId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param parentTaskId the parent task ID
+	 * @return the number of matching tasks
+	 */
+	public static int countByU_P(long userId, long parentTaskId) {
+		return getPersistence().countByU_P(userId, parentTaskId);
+	}
+
+	/**
+	 * Returns all the tasks where parentTaskId = &#63;.
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @return the matching tasks
+	 */
+	public static List<Task> findByParentTaskId(long parentTaskId) {
+		return getPersistence().findByParentTaskId(parentTaskId);
+	}
+
+	/**
+	 * Returns a range of all the tasks where parentTaskId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @return the range of matching tasks
+	 */
+	public static List<Task> findByParentTaskId(
+		long parentTaskId, int start, int end) {
+
+		return getPersistence().findByParentTaskId(parentTaskId, start, end);
+	}
+
+	/**
+	 * Returns an ordered range of all the tasks where parentTaskId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching tasks
+	 */
+	public static List<Task> findByParentTaskId(
+		long parentTaskId, int start, int end,
+		OrderByComparator<Task> orderByComparator) {
+
+		return getPersistence().findByParentTaskId(
+			parentTaskId, start, end, orderByComparator);
+	}
+
+	/**
+	 * Returns an ordered range of all the tasks where parentTaskId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>TaskModelImpl</code>.
+	 * </p>
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @param start the lower bound of the range of tasks
+	 * @param end the upper bound of the range of tasks (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching tasks
+	 */
+	public static List<Task> findByParentTaskId(
+		long parentTaskId, int start, int end,
+		OrderByComparator<Task> orderByComparator, boolean useFinderCache) {
+
+		return getPersistence().findByParentTaskId(
+			parentTaskId, start, end, orderByComparator, useFinderCache);
+	}
+
+	/**
+	 * Returns the first task in the ordered set where parentTaskId = &#63;.
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching task
+	 * @throws NoSuchTaskException if a matching task could not be found
+	 */
+	public static Task findByParentTaskId_First(
+			long parentTaskId, OrderByComparator<Task> orderByComparator)
+		throws com.desafiosea.todo.exception.NoSuchTaskException {
+
+		return getPersistence().findByParentTaskId_First(
+			parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the first task in the ordered set where parentTaskId = &#63;.
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching task, or <code>null</code> if a matching task could not be found
+	 */
+	public static Task fetchByParentTaskId_First(
+		long parentTaskId, OrderByComparator<Task> orderByComparator) {
+
+		return getPersistence().fetchByParentTaskId_First(
+			parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the last task in the ordered set where parentTaskId = &#63;.
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching task
+	 * @throws NoSuchTaskException if a matching task could not be found
+	 */
+	public static Task findByParentTaskId_Last(
+			long parentTaskId, OrderByComparator<Task> orderByComparator)
+		throws com.desafiosea.todo.exception.NoSuchTaskException {
+
+		return getPersistence().findByParentTaskId_Last(
+			parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the last task in the ordered set where parentTaskId = &#63;.
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching task, or <code>null</code> if a matching task could not be found
+	 */
+	public static Task fetchByParentTaskId_Last(
+		long parentTaskId, OrderByComparator<Task> orderByComparator) {
+
+		return getPersistence().fetchByParentTaskId_Last(
+			parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Returns the tasks before and after the current task in the ordered set where parentTaskId = &#63;.
+	 *
+	 * @param taskId the primary key of the current task
+	 * @param parentTaskId the parent task ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next task
+	 * @throws NoSuchTaskException if a task with the primary key could not be found
+	 */
+	public static Task[] findByParentTaskId_PrevAndNext(
+			long taskId, long parentTaskId,
+			OrderByComparator<Task> orderByComparator)
+		throws com.desafiosea.todo.exception.NoSuchTaskException {
+
+		return getPersistence().findByParentTaskId_PrevAndNext(
+			taskId, parentTaskId, orderByComparator);
+	}
+
+	/**
+	 * Removes all the tasks where parentTaskId = &#63; from the database.
+	 *
+	 * @param parentTaskId the parent task ID
+	 */
+	public static void removeByParentTaskId(long parentTaskId) {
+		getPersistence().removeByParentTaskId(parentTaskId);
+	}
+
+	/**
+	 * Returns the number of tasks where parentTaskId = &#63;.
+	 *
+	 * @param parentTaskId the parent task ID
+	 * @return the number of matching tasks
+	 */
+	public static int countByParentTaskId(long parentTaskId) {
+		return getPersistence().countByParentTaskId(parentTaskId);
+	}
+
+	/**
 	 * Caches the task in the entity cache if it is enabled.
 	 *
 	 * @param task the task

@@ -11,12 +11,16 @@
 <liferay-ui:error key="task-update-error" message="Ocorreu um erro ao atualizar a tarefa." />
 
 <%
-List<Task> tasks = (List<Task>)request.getAttribute("tasks");
+List<Task> rootTasks = (List<Task>)request.getAttribute("rootTasks");
+Map<Long, List<Task>> subtasksByParentTaskId =
+	(Map<Long, List<Task>>)request.getAttribute("subtasksByParentTaskId");
+Map<Long, String> taskImageUrls =
+	(Map<Long, String>)request.getAttribute("taskImageUrls");
+
 int totalCount = (Integer)request.getAttribute("totalCount");
 int pendingCount = (Integer)request.getAttribute("pendingCount");
 int doneCount = (Integer)request.getAttribute("doneCount");
 String currentFilter = (String)request.getAttribute("currentFilter");
-Map<Long, String> taskImageUrls = (Map<Long, String>)request.getAttribute("taskImageUrls");
 
 if (currentFilter == null || currentFilter.isEmpty()) {
 	currentFilter = "all";
@@ -63,19 +67,25 @@ String namespace = renderResponse.getNamespace();
 		</div>
 	</div>
 
-	<% if (tasks == null || tasks.isEmpty()) { %>
+	<% if (rootTasks == null || rootTasks.isEmpty()) { %>
 		<div class="task-empty-card">
 			<p class="task-empty-title">Nenhuma tarefa cadastrada ainda.</p>
 			<p class="task-empty-subtitle">Crie sua primeira tarefa para começar a organizar seu dia.</p>
 		</div>
 	<% } else { %>
 		<ul class="task-list" id="<%= namespace %>taskList">
-			<% for (Task task : tasks) { %>
+			<% for (Task task : rootTasks) { %>
 				<%
 				String imageURL = null;
 
 				if (taskImageUrls != null) {
 					imageURL = taskImageUrls.get(task.getTaskId());
+				}
+
+				List<Task> subtasks = null;
+
+				if (subtasksByParentTaskId != null) {
+					subtasks = subtasksByParentTaskId.get(task.getTaskId());
 				}
 				%>
 
@@ -109,6 +119,12 @@ String namespace = renderResponse.getNamespace();
 						<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
 					</portlet:renderURL>
 
+					<portlet:renderURL var="newSubtaskURL">
+						<portlet:param name="mvcRenderCommandName" value="/task/form" />
+						<portlet:param name="parentTaskId" value="<%= String.valueOf(task.getTaskId()) %>" />
+						<portlet:param name="filter" value="<%= currentFilter %>" />
+					</portlet:renderURL>
+
 					<portlet:actionURL name="/task/toggle-status" var="toggleTaskStatusURL">
 						<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
 					</portlet:actionURL>
@@ -123,6 +139,13 @@ String namespace = renderResponse.getNamespace();
 							href="<%= editTaskURL.toString() %>&<%= namespace %>filter=<%= currentFilter %>"
 						>
 							Editar
+						</a>
+
+						<a
+							class="btn btn-light task-subtask-link"
+							href="<%= newSubtaskURL.toString() %>"
+						>
+							Adicionar Subtarefa
 						</a>
 
 						<aui:form action="<%= toggleTaskStatusURL %>" method="post" cssClass="d-inline task-filter-form">
@@ -141,6 +164,86 @@ String namespace = renderResponse.getNamespace();
 							/>
 						</aui:form>
 					</div>
+
+					<% if (subtasks != null && !subtasks.isEmpty()) { %>
+						<div class="subtask-section-title">Subtarefas</div>
+
+						<ul class="subtask-list">
+							<% for (Task subtask : subtasks) { %>
+								<%
+								String subtaskImageURL = null;
+
+								if (taskImageUrls != null) {
+									subtaskImageURL = taskImageUrls.get(subtask.getTaskId());
+								}
+								%>
+
+								<li class="subtask-item" data-status="<%= subtask.isDone() ? "done" : "pending" %>">
+									<div class="task-item-header">
+										<div class="task-item-main">
+											<h4 class="subtask-title"><%= subtask.getTitle() %></h4>
+
+											<% if (subtask.getDescription() != null && !subtask.getDescription().trim().isEmpty()) { %>
+												<p class="task-description"><%= subtask.getDescription() %></p>
+											<% } %>
+										</div>
+
+										<span class="task-status-badge <%= subtask.isDone() ? "task-status-done" : "task-status-pending" %>">
+											<%= subtask.isDone() ? "Concluída" : "Pendente" %>
+										</span>
+									</div>
+
+									<% if (subtaskImageURL != null && !subtaskImageURL.isEmpty()) { %>
+										<div class="task-image-wrapper">
+											<img
+												src="<%= subtaskImageURL %>"
+												alt="Imagem da subtarefa"
+												class="task-image"
+											/>
+										</div>
+									<% } %>
+
+									<portlet:renderURL var="editSubtaskURL">
+										<portlet:param name="mvcRenderCommandName" value="/task/edit-form" />
+										<portlet:param name="taskId" value="<%= String.valueOf(subtask.getTaskId()) %>" />
+									</portlet:renderURL>
+
+									<portlet:actionURL name="/task/toggle-status" var="toggleSubtaskStatusURL">
+										<portlet:param name="taskId" value="<%= String.valueOf(subtask.getTaskId()) %>" />
+									</portlet:actionURL>
+
+									<portlet:actionURL name="/task/delete" var="deleteSubtaskURL">
+										<portlet:param name="taskId" value="<%= String.valueOf(subtask.getTaskId()) %>" />
+									</portlet:actionURL>
+
+									<div class="task-actions">
+										<a
+											class="btn btn-secondary task-edit-link"
+											href="<%= editSubtaskURL.toString() %>&<%= namespace %>filter=<%= currentFilter %>"
+										>
+											Editar
+										</a>
+
+										<aui:form action="<%= toggleSubtaskStatusURL %>" method="post" cssClass="d-inline task-filter-form">
+											<aui:input name="filter" type="hidden" value="<%= currentFilter %>" cssClass="task-filter-input" />
+											<aui:button
+												type="submit"
+												value="<%= subtask.isDone() ? "Reabrir" : "Concluir" %>"
+											/>
+										</aui:form>
+
+										<aui:form action="<%= deleteSubtaskURL %>" method="post" cssClass="d-inline task-filter-form">
+											<aui:input name="filter" type="hidden" value="<%= currentFilter %>" cssClass="task-filter-input" />
+											<aui:button
+												type="submit"
+												value="Excluir"
+											/>
+										</aui:form>
+									</div>
+								</li>
+							<% } %>
+						</ul>
+					<% } %>
 				</li>
 			<% } %>
 		</ul>
@@ -151,7 +254,6 @@ String namespace = renderResponse.getNamespace();
 (function() {
 	const namespace = '<%= namespace %>';
 	const tabsContainer = document.getElementById(namespace + 'taskTabs');
-	const taskList = document.getElementById(namespace + 'taskList');
 	const currentFilterInput = document.getElementById(namespace + 'currentFilter');
 	const newTaskLink = document.getElementById(namespace + 'newTaskLink');
 
@@ -160,7 +262,7 @@ String namespace = renderResponse.getNamespace();
 	}
 
 	const tabs = tabsContainer.querySelectorAll('.task-tab');
-	const items = taskList ? taskList.querySelectorAll('.task-item') : [];
+	const items = document.querySelectorAll('.task-item, .subtask-item');
 	const editLinks = document.querySelectorAll('.task-edit-link');
 	const filterInputs = document.querySelectorAll('.task-filter-input');
 

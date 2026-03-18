@@ -132,6 +132,10 @@ public class TaskPersistenceTest {
 
 		newTask.setDone(RandomTestUtil.randomBoolean());
 
+		newTask.setFileEntryId(RandomTestUtil.nextLong());
+
+		newTask.setParentTaskId(RandomTestUtil.nextLong());
+
 		_tasks.add(_persistence.update(newTask));
 
 		Task existingTask = _persistence.findByPrimaryKey(
@@ -153,6 +157,10 @@ public class TaskPersistenceTest {
 		Assert.assertEquals(
 			existingTask.getDescription(), newTask.getDescription());
 		Assert.assertEquals(existingTask.isDone(), newTask.isDone());
+		Assert.assertEquals(
+			existingTask.getFileEntryId(), newTask.getFileEntryId());
+		Assert.assertEquals(
+			existingTask.getParentTaskId(), newTask.getParentTaskId());
 	}
 
 	@Test
@@ -160,6 +168,21 @@ public class TaskPersistenceTest {
 		_persistence.countByUserId(RandomTestUtil.nextLong());
 
 		_persistence.countByUserId(0L);
+	}
+
+	@Test
+	public void testCountByU_P() throws Exception {
+		_persistence.countByU_P(
+			RandomTestUtil.nextLong(), RandomTestUtil.nextLong());
+
+		_persistence.countByU_P(0L, 0L);
+	}
+
+	@Test
+	public void testCountByParentTaskId() throws Exception {
+		_persistence.countByParentTaskId(RandomTestUtil.nextLong());
+
+		_persistence.countByParentTaskId(0L);
 	}
 
 	@Test
@@ -190,7 +213,7 @@ public class TaskPersistenceTest {
 			"TODO_Task", "taskId", true, "groupId", true, "companyId", true,
 			"userId", true, "userName", true, "createDate", true,
 			"modifiedDate", true, "title", true, "description", true, "done",
-			true);
+			true, "fileEntryId", true, "parentTaskId", true);
 	}
 
 	@Test
@@ -413,6 +436,10 @@ public class TaskPersistenceTest {
 		task.setDescription(RandomTestUtil.randomString());
 
 		task.setDone(RandomTestUtil.randomBoolean());
+
+		task.setFileEntryId(RandomTestUtil.nextLong());
+
+		task.setParentTaskId(RandomTestUtil.nextLong());
 
 		_tasks.add(_persistence.update(task));
 

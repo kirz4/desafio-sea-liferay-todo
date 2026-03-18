@@ -65,7 +65,8 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
 		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
 		{"modifiedDate", Types.TIMESTAMP}, {"title", Types.VARCHAR},
-		{"description", Types.VARCHAR}, {"done", Types.BOOLEAN}
+		{"description", Types.VARCHAR}, {"done", Types.BOOLEAN},
+		{"fileEntryId", Types.BIGINT}, {"parentTaskId", Types.BIGINT}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -82,10 +83,12 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("done", Types.BOOLEAN);
+		TABLE_COLUMNS_MAP.put("fileEntryId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("parentTaskId", Types.BIGINT);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table TODO_Task (taskId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,title VARCHAR(75) null,description VARCHAR(75) null,done BOOLEAN)";
+		"create table TODO_Task (taskId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,title VARCHAR(75) null,description VARCHAR(75) null,done BOOLEAN,fileEntryId LONG,parentTaskId LONG)";
 
 	public static final String TABLE_SQL_DROP = "drop table TODO_Task";
 
@@ -104,14 +107,20 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long USERID_COLUMN_BITMASK = 1L;
+	public static final long PARENTTASKID_COLUMN_BITMASK = 1L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long USERID_COLUMN_BITMASK = 2L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
 	 *		#getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long CREATEDATE_COLUMN_BITMASK = 2L;
+	public static final long CREATEDATE_COLUMN_BITMASK = 4L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
@@ -226,6 +235,8 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 			attributeGetterFunctions.put("title", Task::getTitle);
 			attributeGetterFunctions.put("description", Task::getDescription);
 			attributeGetterFunctions.put("done", Task::getDone);
+			attributeGetterFunctions.put("fileEntryId", Task::getFileEntryId);
+			attributeGetterFunctions.put("parentTaskId", Task::getParentTaskId);
 
 			_attributeGetterFunctions = Collections.unmodifiableMap(
 				attributeGetterFunctions);
@@ -262,6 +273,10 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 				"description", (BiConsumer<Task, String>)Task::setDescription);
 			attributeSetterBiConsumers.put(
 				"done", (BiConsumer<Task, Boolean>)Task::setDone);
+			attributeSetterBiConsumers.put(
+				"fileEntryId", (BiConsumer<Task, Long>)Task::setFileEntryId);
+			attributeSetterBiConsumers.put(
+				"parentTaskId", (BiConsumer<Task, Long>)Task::setParentTaskId);
 
 			_attributeSetterBiConsumers = Collections.unmodifiableMap(
 				(Map)attributeSetterBiConsumers);
@@ -460,6 +475,44 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 		_done = done;
 	}
 
+	@Override
+	public long getFileEntryId() {
+		return _fileEntryId;
+	}
+
+	@Override
+	public void setFileEntryId(long fileEntryId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_fileEntryId = fileEntryId;
+	}
+
+	@Override
+	public long getParentTaskId() {
+		return _parentTaskId;
+	}
+
+	@Override
+	public void setParentTaskId(long parentTaskId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_parentTaskId = parentTaskId;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public long getOriginalParentTaskId() {
+		return GetterUtil.getLong(
+			this.<Long>getColumnOriginalValue("parentTaskId"));
+	}
+
 	public long getColumnBitmask() {
 		if (_columnBitmask > 0) {
 			return _columnBitmask;
@@ -526,6 +579,8 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 		taskImpl.setTitle(getTitle());
 		taskImpl.setDescription(getDescription());
 		taskImpl.setDone(isDone());
+		taskImpl.setFileEntryId(getFileEntryId());
+		taskImpl.setParentTaskId(getParentTaskId());
 
 		taskImpl.resetOriginalValues();
 
@@ -548,6 +603,10 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 		taskImpl.setDescription(
 			this.<String>getColumnOriginalValue("description"));
 		taskImpl.setDone(this.<Boolean>getColumnOriginalValue("done"));
+		taskImpl.setFileEntryId(
+			this.<Long>getColumnOriginalValue("fileEntryId"));
+		taskImpl.setParentTaskId(
+			this.<Long>getColumnOriginalValue("parentTaskId"));
 
 		return taskImpl;
 	}
@@ -675,6 +734,10 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 
 		taskCacheModel.done = isDone();
 
+		taskCacheModel.fileEntryId = getFileEntryId();
+
+		taskCacheModel.parentTaskId = getParentTaskId();
+
 		return taskCacheModel;
 	}
 
@@ -746,6 +809,8 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 	private String _title;
 	private String _description;
 	private boolean _done;
+	private long _fileEntryId;
+	private long _parentTaskId;
 
 	public <T> T getColumnValue(String columnName) {
 		Function<Task, Object> function =
@@ -785,6 +850,8 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 		_columnOriginalValues.put("title", _title);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("done", _done);
+		_columnOriginalValues.put("fileEntryId", _fileEntryId);
+		_columnOriginalValues.put("parentTaskId", _parentTaskId);
 	}
 
 	private transient Map<String, Object> _columnOriginalValues;
@@ -817,6 +884,10 @@ public class TaskModelImpl extends BaseModelImpl<Task> implements TaskModel {
 		columnBitmasks.put("description", 256L);
 
 		columnBitmasks.put("done", 512L);
+
+		columnBitmasks.put("fileEntryId", 1024L);
+
+		columnBitmasks.put("parentTaskId", 2048L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

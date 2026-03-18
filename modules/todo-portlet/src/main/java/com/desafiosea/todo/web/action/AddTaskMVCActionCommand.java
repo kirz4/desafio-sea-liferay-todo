@@ -50,6 +50,7 @@ public class AddTaskMVCActionCommand implements MVCActionCommand {
 			String title = ParamUtil.getString(actionRequest, "title");
 			String description = ParamUtil.getString(actionRequest, "description");
 			boolean done = ParamUtil.getBoolean(actionRequest, "done");
+			long parentTaskId = ParamUtil.getLong(actionRequest, "parentTaskId", 0L);
 
 			long fileEntryId = _uploadTaskImage(actionRequest, themeDisplay);
 
@@ -59,7 +60,8 @@ public class AddTaskMVCActionCommand implements MVCActionCommand {
 				title,
 				description,
 				done,
-				fileEntryId);
+				fileEntryId,
+				parentTaskId);
 
 			return true;
 		}
@@ -90,6 +92,9 @@ public class AddTaskMVCActionCommand implements MVCActionCommand {
 			"done", String.valueOf(ParamUtil.getBoolean(actionRequest, "done")));
 		actionResponse.setRenderParameter(
 			"filter", ParamUtil.getString(actionRequest, "filter", "all"));
+		actionResponse.setRenderParameter(
+			"parentTaskId",
+			String.valueOf(ParamUtil.getLong(actionRequest, "parentTaskId", 0L)));
 
 		return true;
 	}
@@ -104,31 +109,34 @@ public class AddTaskMVCActionCommand implements MVCActionCommand {
 		String fileName = uploadPortletRequest.getFileName("taskImage");
 		String contentType = uploadPortletRequest.getContentType("taskImage");
 
-		if ((file == null) || (file.length() == 0) || (fileName == null) || fileName.isEmpty()) {
+		if ((file == null) || (file.length() == 0) ||
+			(fileName == null) || fileName.isEmpty()) {
+
 			return 0L;
 		}
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			ActionRequest.class.getName(), actionRequest);
-        serviceContext.setAddGroupPermissions(true);
-        serviceContext.setAddGuestPermissions(true);
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
 
 		FileEntry fileEntry = _dlAppLocalService.addFileEntry(
-            null,
-            themeDisplay.getUserId(),
-            themeDisplay.getScopeGroupId(),
-            0,
-            fileName,
-            contentType != null ? contentType : ContentTypes.APPLICATION_OCTET_STREAM,
-            fileName,
-            null,
-            "Tarefa - imagem anexada",
-            "",
-            file,
-            null,
-            null,
-            null,
-            serviceContext);
+			null,
+			themeDisplay.getUserId(),
+			themeDisplay.getScopeGroupId(),
+			0,
+			fileName,
+			contentType != null ? contentType : ContentTypes.APPLICATION_OCTET_STREAM,
+			fileName,
+			null,
+			"Tarefa - imagem anexada",
+			"",
+			file,
+			null,
+			null,
+			null,
+			serviceContext);
 
 		return fileEntry.getFileEntryId();
 	}
