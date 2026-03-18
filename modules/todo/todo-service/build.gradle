@@ -9,12 +9,28 @@ dependencies {
 	api project(":modules:todo:todo-api")
 
 	compileOnly group: "com.liferay.portal", name: "release.portal.api", version: liferayPortalVersion
+
+	testImplementation project(":modules:todo:todo-api")
+	testImplementation group: "com.liferay.portal", name: "release.portal.api", version: liferayPortalVersion
+	testImplementation group: "junit", name: "junit", version: "4.13.2"
+	testImplementation group: "org.mockito", name: "mockito-core", version: "5.11.0"
 }
 
 buildService {
 	apiDir = "../todo-api/src/main/java"
 	testDir = "../todo-test/src/testIntegration/java"
 	osgiModule = true
+}
+
+test {
+	useJUnit()
+
+	jvmArgs(
+		"--add-opens=java.base/java.lang=ALL-UNNAMED",
+		"--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+		"--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+		"--add-opens=java.base/java.util=ALL-UNNAMED"
+	)
 }
 
 group = "com.desafiosea.todo"
