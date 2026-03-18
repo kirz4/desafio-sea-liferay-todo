@@ -21,6 +21,7 @@ boolean editing = (task != null) || (taskId > 0);
 
 String title = ParamUtil.getString(request, "title");
 String description = ParamUtil.getString(request, "description");
+String currentFilter = ParamUtil.getString(request, "filter", "all");
 
 String doneParam = ParamUtil.getString(request, "done");
 boolean done = "true".equals(doneParam) || "on".equals(doneParam);
@@ -46,6 +47,7 @@ if (task != null) {
 
 <portlet:renderURL var="viewTasksURL">
 	<portlet:param name="mvcRenderCommandName" value="/task/view" />
+	<portlet:param name="filter" value="<%= currentFilter %>" />
 </portlet:renderURL>
 
 <h2>
@@ -53,6 +55,8 @@ if (task != null) {
 </h2>
 
 <aui:form action="<%= taskActionURL %>" method="post">
+	<aui:input name="filter" type="hidden" value="<%= currentFilter %>" />
+
 	<% if (editing) { %>
 		<aui:input name="taskId" type="hidden" value="<%= taskId %>" />
 	<% } %>

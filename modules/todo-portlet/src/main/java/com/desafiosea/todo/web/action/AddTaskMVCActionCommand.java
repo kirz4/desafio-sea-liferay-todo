@@ -30,62 +30,54 @@ import org.osgi.service.component.annotations.Reference;
 public class AddTaskMVCActionCommand implements MVCActionCommand {
 
 	@Override
-    public boolean processAction(
-	ActionRequest actionRequest, ActionResponse actionResponse) {
+	public boolean processAction(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
 
-	System.out.println("### ADD ACTION EXECUTOU ###");
+		try {
+			ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
 
-	try {
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
+			User user = themeDisplay.getUser();
 
-		User user = themeDisplay.getUser();
+			String title = ParamUtil.getString(actionRequest, "title");
+			String description = ParamUtil.getString(actionRequest, "description");
+			boolean done = ParamUtil.getBoolean(actionRequest, "done");
 
-		String title = ParamUtil.getString(actionRequest, "title");
-		String description = ParamUtil.getString(actionRequest, "description");
-		boolean done = ParamUtil.getBoolean(actionRequest, "done");
+			_taskLocalService.addTask(
+				user.getUserId(), themeDisplay.getScopeGroupId(), title, description, done);
 
-		System.out.println("### title=[" + title + "] description.length=" + description.length() + " ###");
+			return true;
+		}
+		catch (TaskTitleRequiredException e) {
+			SessionErrors.add(actionRequest, "task-title-required");
+		}
+		catch (TaskTitleSizeException e) {
+			SessionErrors.add(actionRequest, "task-title-size");
+		}
+		catch (TaskDescriptionSizeException e) {
+			SessionErrors.add(actionRequest, "task-description-size");
+		}
+		catch (Exception e) {
+			SessionErrors.add(actionRequest, "task-add-error");
+		}
 
-		_taskLocalService.addTask(
-			user.getUserId(), themeDisplay.getScopeGroupId(), title, description, done);
+		SessionMessages.add(
+			actionRequest,
+			PortalUtil.getPortletId(actionRequest) +
+				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
 
-		System.out.println("### ADD SUCCESS ###");
+		actionResponse.setRenderParameter("mvcRenderCommandName", "/task/form");
+		actionResponse.setRenderParameter(
+			"title", ParamUtil.getString(actionRequest, "title"));
+		actionResponse.setRenderParameter(
+			"description", ParamUtil.getString(actionRequest, "description"));
+		actionResponse.setRenderParameter(
+			"done", String.valueOf(ParamUtil.getBoolean(actionRequest, "done")));
+		actionResponse.setRenderParameter(
+			"filter", ParamUtil.getString(actionRequest, "filter", "all"));
+
 		return true;
 	}
-	catch (TaskTitleRequiredException e) {
-		System.out.println("### CAIU EM TaskTitleRequiredException ###");
-		SessionErrors.add(actionRequest, "task-title-required");
-	}
-	catch (TaskTitleSizeException e) {
-		System.out.println("### CAIU EM TaskTitleSizeException ###");
-		SessionErrors.add(actionRequest, "task-title-size");
-	}
-	catch (TaskDescriptionSizeException e) {
-		System.out.println("### CAIU EM TaskDescriptionSizeException ###");
-		SessionErrors.add(actionRequest, "task-description-size");
-	}
-	catch (Exception e) {
-		e.printStackTrace();
-		System.out.println("### CAIU EM EXCEPTION GENERICA ###");
-		SessionErrors.add(actionRequest, "task-add-error");
-	}
-
-	SessionMessages.add(
-		actionRequest,
-		PortalUtil.getPortletId(actionRequest) +
-			SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
-
-	actionResponse.setRenderParameter("mvcRenderCommandName", "/task/form");
-	actionResponse.setRenderParameter(
-		"title", ParamUtil.getString(actionRequest, "title"));
-	actionResponse.setRenderParameter(
-		"description", ParamUtil.getString(actionRequest, "description"));
-	actionResponse.setRenderParameter(
-		"done", String.valueOf(ParamUtil.getBoolean(actionRequest, "done")));
-
-	return true;
-}
 
 	@Reference
 	private TaskLocalService _taskLocalService;

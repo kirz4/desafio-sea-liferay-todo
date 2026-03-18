@@ -80,6 +80,8 @@ public class UpdateTaskMVCActionCommand implements MVCActionCommand {
 			"description", ParamUtil.getString(actionRequest, "description"));
 		actionResponse.setRenderParameter(
 			"done", String.valueOf(ParamUtil.getBoolean(actionRequest, "done")));
+		actionResponse.setRenderParameter(
+			"filter", ParamUtil.getString(actionRequest, "filter", "all"));
 
 		return true;
 	}

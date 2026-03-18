@@ -9,6 +9,7 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import javax.portlet.ActionRequest;
@@ -43,7 +44,7 @@ public class DeleteTaskMVCActionCommand implements MVCActionCommand {
 			return true;
 		}
 		catch (TaskPermissionException e) {
-			SessionErrors.add(actionRequest, TaskPermissionException.class);
+			SessionErrors.add(actionRequest, "task-permission-denied");
 		}
 		catch (Exception e) {
 			SessionErrors.add(actionRequest, "task-delete-error");
@@ -51,12 +52,14 @@ public class DeleteTaskMVCActionCommand implements MVCActionCommand {
 
 		SessionMessages.add(
 			actionRequest,
-			actionRequest.getPortletSession().getPortletContext().getPortletContextName() +
+			PortalUtil.getPortletId(actionRequest) +
 				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
 
 		actionResponse.setRenderParameter("mvcRenderCommandName", "/task/view");
+		actionResponse.setRenderParameter(
+			"filter", ParamUtil.getString(actionRequest, "filter", "all"));
 
-		return false;
+		return true;
 	}
 
 	@Reference
