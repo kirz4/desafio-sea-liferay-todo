@@ -28,4 +28,4 @@ bundles/routes/
 
 # Arquivos locais
 gradle-local.properties
-bundles/
+bundles/startup-todo.log

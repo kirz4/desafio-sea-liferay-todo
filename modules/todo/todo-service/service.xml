@@ -17,6 +17,7 @@
 		<column name="title" type="String" />
 		<column name="description" type="String" />
 		<column name="done" type="boolean" />
+		<column name="fileEntryId" type="long" />
 
 		<finder name="UserId" return-type="Collection">
 			<finder-column name="userId" />

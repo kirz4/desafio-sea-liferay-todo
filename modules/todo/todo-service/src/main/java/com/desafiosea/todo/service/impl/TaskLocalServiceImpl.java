@@ -32,7 +32,7 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 
 	public Task addTask(
 		long userId, long groupId, String title, String description,
-		boolean done) throws PortalException {
+		boolean done, long fileEntryId) throws PortalException {
 
 		validate(title, description);
 
@@ -54,22 +54,25 @@ public class TaskLocalServiceImpl extends TaskLocalServiceBaseImpl {
 		task.setTitle(title.trim());
 		task.setDescription(normalizeDescription(description));
 		task.setDone(done);
+		task.setFileEntryId(fileEntryId);
 
 		return addTask(task);
 	}
 
 	public Task updateTask(
 		long userId, long taskId, String title, String description,
-		boolean done) throws PortalException {
+		boolean done, long fileEntryId) throws PortalException {
 
 		validate(title, description);
 
 		Task task = getTask(taskId);
 
 		validateOwnership(userId, task);
+
 		task.setTitle(title.trim());
 		task.setDescription(normalizeDescription(description));
 		task.setDone(done);
+		task.setFileEntryId(fileEntryId);
 		task.setModifiedDate(new Date());
 
 		return updateTask(task);
