@@ -2,6 +2,8 @@ plugins {
 	id "java-library"
 }
 
+apply plugin: "biz.aQute.bnd.builder"
+
 dependencies {
 	api project(":modules:todo:todo-api")
 
@@ -9,8 +11,3 @@ dependencies {
 }
 
 group = "com.desafiosea.todo"
-
-// buildService {
-// 	apiDir = "../todo-api/src/main/java"
-// 	testDir = "../todo-test/src/testIntegration/java"
-// }

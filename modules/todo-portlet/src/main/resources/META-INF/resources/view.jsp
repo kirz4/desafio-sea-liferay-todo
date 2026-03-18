@@ -1,13 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/init.jsp" %>
 
-<liferay-ui:error key="task-delete-error" message="task-delete-error" />
-<liferay-ui:error key="task-toggle-error" message="task-toggle-error" />
-<liferay-ui:error key="task-update-error" message="task-update-error" />
-
 <%@ page import="com.desafiosea.todo.model.Task" %>
-<%@ page import="java.util.List" %>
 <%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
+<%@ page import="java.util.List" %>
+
+<liferay-ui:error key="task-permission-denied" message="Você não tem permissão para modificar esta tarefa." />
+<liferay-ui:error key="task-delete-error" message="Ocorreu um erro ao deletar a tarefa." />
+<liferay-ui:error key="task-toggle-error" message="Ocorreu um erro ao alterar o status da tarefa." />
+<liferay-ui:error key="task-update-error" message="Ocorreu um erro ao atualizar a tarefa." />
 
 <portlet:renderURL var="newTaskURL">
 	<portlet:param name="mvcRenderCommandName" value="/task/form" />
@@ -20,7 +21,9 @@ List<Task> tasks = (List<Task>)request.getAttribute("tasks");
 <h2><liferay-ui:message key="my-tasks" /></h2>
 
 <p>
-	<aui:button type="button" value="new-task-button" onClick="<%= newTaskURL.toString() %>" />
+	<a class="btn btn-primary" href="<%= newTaskURL.toString() %>">
+		<liferay-ui:message key="new-task-button" />
+	</a>
 </p>
 
 <% if (tasks == null || tasks.isEmpty()) { %>
@@ -46,23 +49,23 @@ List<Task> tasks = (List<Task>)request.getAttribute("tasks");
 					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
 				</portlet:actionURL>
 
-				<aui:button
-					type="button"
-					value="task-edit"
-					onClick="<%= editTaskURL.toString() %>"
-				/>
+				<a class="btn btn-secondary" href="<%= editTaskURL.toString() %>">
+					<liferay-ui:message key="task-edit" />
+				</a>
 
-				<aui:button
-					type="button"
-					value="<%= task.isDone() ? "task-mark-pending" : "task-mark-done" %>"
-					onClick="<%= toggleTaskStatusURL.toString() %>"
-				/>
+				<aui:form action="<%= toggleTaskStatusURL %>" method="post" cssClass="d-inline">
+					<aui:button
+						type="submit"
+						value="<%= task.isDone() ? "task-mark-pending" : "task-mark-done" %>"
+					/>
+				</aui:form>
 
-				<aui:button
-					type="button"
-					value="task-delete"
-					onClick="<%= deleteTaskURL.toString() %>"
-				/>
+				<aui:form action="<%= deleteTaskURL %>" method="post" cssClass="d-inline">
+					<aui:button
+						type="submit"
+						value="task-delete"
+					/>
+				</aui:form>
 			</li>
 		<% } %>
 	</ul>
