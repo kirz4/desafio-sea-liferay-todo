@@ -29,11 +29,11 @@ public class TaskLocalServiceWrapper
 	@Override
 	public com.desafiosea.todo.model.Task addTask(
 			long userId, long groupId, String title, String description,
-			boolean done)
+			boolean done, long fileEntryId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _taskLocalService.addTask(
-			userId, groupId, title, description, done);
+			userId, groupId, title, description, done, fileEntryId);
 	}
 
 	/**
@@ -330,11 +330,11 @@ public class TaskLocalServiceWrapper
 	@Override
 	public com.desafiosea.todo.model.Task updateTask(
 			long userId, long taskId, String title, String description,
-			boolean done)
+			boolean done, long fileEntryId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _taskLocalService.updateTask(
-			userId, taskId, title, description, done);
+			userId, taskId, title, description, done, fileEntryId);
 	}
 
 	/**

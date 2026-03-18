@@ -55,7 +55,7 @@ public interface TaskLocalService
 	 */
 	public Task addTask(
 			long userId, long groupId, String title, String description,
-			boolean done)
+			boolean done, long fileEntryId)
 		throws PortalException;
 
 	/**
@@ -258,7 +258,7 @@ public interface TaskLocalService
 
 	public Task updateTask(
 			long userId, long taskId, String title, String description,
-			boolean done)
+			boolean done, long fileEntryId)
 		throws PortalException;
 
 	/**

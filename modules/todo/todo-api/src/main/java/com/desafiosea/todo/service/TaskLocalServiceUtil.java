@@ -39,10 +39,11 @@ public class TaskLocalServiceUtil {
 	 */
 	public static Task addTask(
 			long userId, long groupId, String title, String description,
-			boolean done)
+			boolean done, long fileEntryId)
 		throws PortalException {
 
-		return getService().addTask(userId, groupId, title, description, done);
+		return getService().addTask(
+			userId, groupId, title, description, done, fileEntryId);
 	}
 
 	/**
@@ -291,11 +292,11 @@ public class TaskLocalServiceUtil {
 
 	public static Task updateTask(
 			long userId, long taskId, String title, String description,
-			boolean done)
+			boolean done, long fileEntryId)
 		throws PortalException {
 
 		return getService().updateTask(
-			userId, taskId, title, description, done);
+			userId, taskId, title, description, done, fileEntryId);
 	}
 
 	/**

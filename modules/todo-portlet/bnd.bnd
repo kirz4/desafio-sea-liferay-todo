@@ -1,7 +1,8 @@
-Bundle-Name: todo-portlet
+Bundle-Name: Todo Portlet
 Bundle-SymbolicName: com.desafiosea.todo.web
 Bundle-Version: 1.0.0
-Export-Package: com.desafiosea.todo.web.constants
-Provide-Capability:\
-	liferay.language.resources;\
-		resource.bundle.base.name="content.Language"
+
+Import-Package: \
+    com.desafiosea.todo.model, \
+    com.desafiosea.todo.service, \
+    *

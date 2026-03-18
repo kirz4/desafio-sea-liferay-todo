@@ -8,5 +8,6 @@ create table TODO_Task (
 	modifiedDate DATE null,
 	title VARCHAR(75) null,
 	description VARCHAR(75) null,
-	done BOOLEAN
+	done BOOLEAN,
+	fileEntryId LONG
 );

@@ -2,8 +2,8 @@
 <%@ include file="/init.jsp" %>
 
 <%@ page import="com.desafiosea.todo.model.Task" %>
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 
 <liferay-ui:error key="task-permission-denied" message="Você não tem permissão para modificar esta tarefa." />
 <liferay-ui:error key="task-delete-error" message="Ocorreu um erro ao deletar a tarefa." />
@@ -16,6 +16,7 @@ int totalCount = (Integer)request.getAttribute("totalCount");
 int pendingCount = (Integer)request.getAttribute("pendingCount");
 int doneCount = (Integer)request.getAttribute("doneCount");
 String currentFilter = (String)request.getAttribute("currentFilter");
+Map<Long, String> taskImageUrls = (Map<Long, String>)request.getAttribute("taskImageUrls");
 
 if (currentFilter == null || currentFilter.isEmpty()) {
 	currentFilter = "all";
@@ -28,85 +29,123 @@ String namespace = renderResponse.getNamespace();
 	<portlet:param name="mvcRenderCommandName" value="/task/form" />
 </portlet:renderURL>
 
-<h2><liferay-ui:message key="my-tasks" /></h2>
+<div class="task-page-container">
+	<div class="task-top-section">
+		<div class="task-header">
+			<div>
+				<h2 class="task-page-title">Minhas Tarefas</h2>
+				<p class="task-page-subtitle">Organize suas tarefas e acompanhe o progresso.</p>
+			</div>
 
-<input type="hidden" id="<%= namespace %>currentFilter" value="<%= currentFilter %>" />
+			<a
+				class="btn btn-primary task-new-button"
+				id="<%= namespace %>newTaskLink"
+				href="<%= newTaskURL.toString() %>&<%= namespace %>filter=<%= currentFilter %>"
+			>
+				Nova Tarefa
+			</a>
+		</div>
 
-<p>
-	<a
-		class="btn btn-primary"
-		id="<%= namespace %>newTaskLink"
-		href="<%= newTaskURL.toString() %>&<%= namespace %>filter=<%= currentFilter %>"
-	>
-		<liferay-ui:message key="new-task-button" />
-	</a>
-</p>
+		<input type="hidden" id="<%= namespace %>currentFilter" value="<%= currentFilter %>" />
 
-<div class="task-tabs" id="<%= namespace %>taskTabs">
-	<button type="button" class="task-tab" data-filter="all">
-		Todas (<%= totalCount %>)
-	</button>
+		<div class="task-tabs" id="<%= namespace %>taskTabs">
+			<button type="button" class="task-tab" data-filter="all">
+				Todas (<%= totalCount %>)
+			</button>
 
-	<button type="button" class="task-tab" data-filter="pending">
-		Pendentes (<%= pendingCount %>)
-	</button>
+			<button type="button" class="task-tab" data-filter="pending">
+				Pendentes (<%= pendingCount %>)
+			</button>
 
-	<button type="button" class="task-tab" data-filter="done">
-		Concluídas (<%= doneCount %>)
-	</button>
+			<button type="button" class="task-tab" data-filter="done">
+				Concluídas (<%= doneCount %>)
+			</button>
+		</div>
+	</div>
+
+	<% if (tasks == null || tasks.isEmpty()) { %>
+		<div class="task-empty-card">
+			<p class="task-empty-title">Nenhuma tarefa cadastrada ainda.</p>
+			<p class="task-empty-subtitle">Crie sua primeira tarefa para começar a organizar seu dia.</p>
+		</div>
+	<% } else { %>
+		<ul class="task-list" id="<%= namespace %>taskList">
+			<% for (Task task : tasks) { %>
+				<%
+				String imageURL = null;
+
+				if (taskImageUrls != null) {
+					imageURL = taskImageUrls.get(task.getTaskId());
+				}
+				%>
+
+				<li class="task-item" data-status="<%= task.isDone() ? "done" : "pending" %>">
+					<div class="task-item-header">
+						<div class="task-item-main">
+							<h3 class="task-title"><%= task.getTitle() %></h3>
+
+							<% if (task.getDescription() != null && !task.getDescription().trim().isEmpty()) { %>
+								<p class="task-description"><%= task.getDescription() %></p>
+							<% } %>
+						</div>
+
+						<span class="task-status-badge <%= task.isDone() ? "task-status-done" : "task-status-pending" %>">
+							<%= task.isDone() ? "Concluída" : "Pendente" %>
+						</span>
+					</div>
+
+					<% if (imageURL != null && !imageURL.isEmpty()) { %>
+						<div class="task-image-wrapper">
+							<img
+								src="<%= imageURL %>"
+								alt="Imagem da tarefa"
+								class="task-image"
+							/>
+						</div>
+					<% } %>
+
+					<portlet:renderURL var="editTaskURL">
+						<portlet:param name="mvcRenderCommandName" value="/task/edit-form" />
+						<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
+					</portlet:renderURL>
+
+					<portlet:actionURL name="/task/toggle-status" var="toggleTaskStatusURL">
+						<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
+					</portlet:actionURL>
+
+					<portlet:actionURL name="/task/delete" var="deleteTaskURL">
+						<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
+					</portlet:actionURL>
+
+					<div class="task-actions">
+						<a
+							class="btn btn-secondary task-edit-link"
+							href="<%= editTaskURL.toString() %>&<%= namespace %>filter=<%= currentFilter %>"
+						>
+							Editar
+						</a>
+
+						<aui:form action="<%= toggleTaskStatusURL %>" method="post" cssClass="d-inline task-filter-form">
+							<aui:input name="filter" type="hidden" value="<%= currentFilter %>" cssClass="task-filter-input" />
+							<aui:button
+								type="submit"
+								value="<%= task.isDone() ? "Reabrir" : "Concluir" %>"
+							/>
+						</aui:form>
+
+						<aui:form action="<%= deleteTaskURL %>" method="post" cssClass="d-inline task-filter-form">
+							<aui:input name="filter" type="hidden" value="<%= currentFilter %>" cssClass="task-filter-input" />
+							<aui:button
+								type="submit"
+								value="Excluir"
+							/>
+						</aui:form>
+					</div>
+				</li>
+			<% } %>
+		</ul>
+	<% } %>
 </div>
-
-<% if (tasks == null || tasks.isEmpty()) { %>
-	<p class="task-empty"><liferay-ui:message key="no-tasks" /></p>
-<% } else { %>
-	<ul class="task-list" id="<%= namespace %>taskList">
-		<% for (Task task : tasks) { %>
-			<li class="task-item" data-status="<%= task.isDone() ? "done" : "pending" %>">
-				<strong><%= task.getTitle() %></strong>
-				- <%= task.getDescription() %>
-				- <span class="task-status"><%= task.isDone() ? LanguageUtil.get(request, "status-done") : LanguageUtil.get(request, "status-pending") %></span>
-
-				<portlet:renderURL var="editTaskURL">
-					<portlet:param name="mvcRenderCommandName" value="/task/edit-form" />
-					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
-				</portlet:renderURL>
-
-				<portlet:actionURL name="/task/toggle-status" var="toggleTaskStatusURL">
-					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
-				</portlet:actionURL>
-
-				<portlet:actionURL name="/task/delete" var="deleteTaskURL">
-					<portlet:param name="taskId" value="<%= String.valueOf(task.getTaskId()) %>" />
-				</portlet:actionURL>
-
-				<div class="task-actions">
-					<a
-						class="btn btn-secondary task-edit-link"
-						href="<%= editTaskURL.toString() %>&<%= namespace %>filter=<%= currentFilter %>"
-					>
-						<liferay-ui:message key="task-edit" />
-					</a>
-
-					<aui:form action="<%= toggleTaskStatusURL %>" method="post" cssClass="d-inline task-filter-form">
-						<aui:input name="filter" type="hidden" value="<%= currentFilter %>" cssClass="task-filter-input" />
-						<aui:button
-							type="submit"
-							value="<%= task.isDone() ? "task-mark-pending" : "task-mark-done" %>"
-						/>
-					</aui:form>
-
-					<aui:form action="<%= deleteTaskURL %>" method="post" cssClass="d-inline task-filter-form">
-						<aui:input name="filter" type="hidden" value="<%= currentFilter %>" cssClass="task-filter-input" />
-						<aui:button
-							type="submit"
-							value="task-delete"
-						/>
-					</aui:form>
-				</div>
-			</li>
-		<% } %>
-	</ul>
-<% } %>
 
 <script>
 (function() {

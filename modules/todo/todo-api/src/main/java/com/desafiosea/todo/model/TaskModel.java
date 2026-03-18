@@ -226,6 +226,20 @@ public interface TaskModel extends BaseModel<Task>, GroupedModel, ShardedModel {
 	 */
 	public void setDone(boolean done);
 
+	/**
+	 * Returns the file entry ID of this task.
+	 *
+	 * @return the file entry ID of this task
+	 */
+	public long getFileEntryId();
+
+	/**
+	 * Sets the file entry ID of this task.
+	 *
+	 * @param fileEntryId the file entry ID of this task
+	 */
+	public void setFileEntryId(long fileEntryId);
+
 	@Override
 	public Task cloneWithOriginalValues();
 
