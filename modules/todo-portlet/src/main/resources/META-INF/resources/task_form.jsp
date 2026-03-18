@@ -2,7 +2,6 @@
 <%@ include file="/init.jsp" %>
 
 <%@ page import="com.desafiosea.todo.model.Task" %>
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
 <%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
 <%@ page import="com.liferay.portal.kernel.util.Validator" %>
 
@@ -50,41 +49,47 @@ if (task != null) {
 	<portlet:param name="filter" value="<%= currentFilter %>" />
 </portlet:renderURL>
 
-<h2>
-	<%= editing ? LanguageUtil.get(request, "task-edit-title") : LanguageUtil.get(request, "new-task") %>
-</h2>
+<div class="task-form-container">
+	<h2><%= editing ? "Editar Tarefa" : "Nova Tarefa" %></h2>
 
-<aui:form action="<%= taskActionURL %>" method="post">
-	<aui:input name="filter" type="hidden" value="<%= currentFilter %>" />
+	<aui:form action="<%= taskActionURL %>" method="post" enctype="multipart/form-data">
+		<aui:input name="filter" type="hidden" value="<%= currentFilter %>" />
 
-	<% if (editing) { %>
-		<aui:input name="taskId" type="hidden" value="<%= taskId %>" />
-	<% } %>
+		<% if (editing) { %>
+			<aui:input name="taskId" type="hidden" value="<%= taskId %>" />
+		<% } %>
 
-	<aui:input
-		name="title"
-		label="task-title"
-		value="<%= title %>"
-	/>
+		<aui:input
+			name="title"
+			label="Título"
+			value="<%= title %>"
+		/>
 
-	<aui:input
-		name="description"
-		label="task-description"
-		type="textarea"
-		value="<%= description %>"
-	/>
+		<aui:input
+			name="description"
+			label="Descrição"
+			type="textarea"
+			value="<%= description %>"
+		/>
 
-	<aui:input
-		name="done"
-		label="task-done"
-		type="checkbox"
-		checked="<%= done %>"
-	/>
+		<aui:input
+			name="done"
+			label="Concluída"
+			type="checkbox"
+			checked="<%= done %>"
+		/>
 
-	<aui:button-row>
-		<aui:button type="submit" value="task-save" />
-		<a class="btn btn-secondary" href="<%= viewTasksURL.toString() %>">
-			<liferay-ui:message key="task-cancel" />
-		</a>
-	</aui:button-row>
-</aui:form>
+		<aui:input
+			name="taskImage"
+			label="Imagem da tarefa"
+			type="file"
+		/>
+
+		<aui:button-row>
+			<aui:button type="submit" value="Salvar" />
+			<a class="btn btn-secondary" href="<%= viewTasksURL.toString() %>">
+				Cancelar
+			</a>
+		</aui:button-row>
+	</aui:form>
+</div>
