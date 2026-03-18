@@ -1,12 +1,17 @@
 package com.desafiosea.todo.web.action;
 
+import com.desafiosea.todo.exception.TaskDescriptionSizeException;
+import com.desafiosea.todo.exception.TaskTitleRequiredException;
+import com.desafiosea.todo.exception.TaskTitleSizeException;
 import com.desafiosea.todo.service.TaskLocalService;
 import com.desafiosea.todo.web.constants.TodoPortletKeys;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import javax.portlet.ActionRequest;
@@ -43,10 +48,35 @@ public class AddTaskMVCActionCommand implements MVCActionCommand {
 
 			return true;
 		}
+		catch (TaskTitleRequiredException e) {
+			SessionErrors.add(actionRequest, "task-title-required");
+		}
+		catch (TaskTitleSizeException e) {
+			SessionErrors.add(actionRequest, "task-title-size");
+		}
+		catch (TaskDescriptionSizeException e) {
+			SessionErrors.add(actionRequest, "task-description-size");
+		}
 		catch (Exception e) {
 			SessionErrors.add(actionRequest, "task-add-error");
-			return false;
 		}
+
+		SessionMessages.add(
+			actionRequest,
+			PortalUtil.getPortletId(actionRequest) +
+				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+
+		actionResponse.setRenderParameter("mvcRenderCommandName", "/task/form");
+		actionResponse.setRenderParameter(
+			"title", ParamUtil.getString(actionRequest, "title"));
+		actionResponse.setRenderParameter(
+			"description", ParamUtil.getString(actionRequest, "description"));
+		actionResponse.setRenderParameter(
+			"done", String.valueOf(ParamUtil.getBoolean(actionRequest, "done")));
+		actionResponse.setRenderParameter(
+			"filter", ParamUtil.getString(actionRequest, "filter", "all"));
+
+		return true;
 	}
 
 	@Reference

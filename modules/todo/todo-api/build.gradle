@@ -2,6 +2,8 @@ plugins {
 	id "java-library"
 }
 
+apply plugin: "biz.aQute.bnd.builder"
+
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "release.portal.api", version: liferayPortalVersion
 }
