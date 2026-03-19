@@ -381,47 +381,6 @@ Isso foi importante para estabilizar o ambiente de desenvolvimento.
 
 ---
 
-## 🧭 Roteiro completo de teste manual
-
-Use este checklist para validar a aplicação manualmente.
-
-### Fluxos principais
-- [ ] criar tarefa sem imagem
-- [ ] criar tarefa com imagem
-- [ ] editar tarefa sem trocar imagem
-- [ ] editar tarefa trocando imagem
-- [ ] marcar tarefa como concluída
-- [ ] reabrir tarefa
-- [ ] excluir tarefa
-
-### Subtarefas
-- [ ] criar subtarefa
-- [ ] editar subtarefa
-- [ ] excluir subtarefa
-- [ ] excluir tarefa pai com subtarefas
-
-### Validações
-- [ ] tentar criar tarefa com título vazio
-- [ ] tentar criar tarefa com título muito curto
-- [ ] tentar criar tarefa com descrição acima do limite
-- [ ] validar feedback visual em erro
-
-### Filtros
-- [ ] verificar aba “Todas”
-- [ ] verificar aba “Pendentes”
-- [ ] verificar aba “Concluídas”
-- [ ] validar contagem correta quando existem subtarefas
-- [ ] validar exibição de tarefa pai quando subtarefa combina com a aba
-
-### Upload
-- [ ] enviar imagem com nome novo
-- [ ] enviar imagem com nome repetido
-- [ ] validar que o sistema salva usando nome único
-- [ ] validar imagem em tarefa
-- [ ] validar imagem em subtarefa
-
----
-
 ## 📂 Estrutura útil do projeto
 
 ```text
@@ -455,6 +414,9 @@ Este projeto permite demonstrar experiência prática em:
 
 ---
 
+# 📂 Estrutura completa do projeto
+
+```text
 desafio-liferay/
 ├── bundles/                         # Bundle do Liferay (runtime)
 │   ├── osgi/
@@ -480,7 +442,8 @@ desafio-liferay/
 │       │   │   └── persistence/
 │       │   │
 │       │   ├── src/main/resources/
-│       │   │   ├── META-INF/sql/
+│       │   │   ├── META-INF/
+│       │   │   │   └── sql/
 │       │   │   ├── service.xml
 │       │   │   └── service.properties
 │       │   │
@@ -490,16 +453,35 @@ desafio-liferay/
 │       │
 │       ├── todo-portlet/           # Camada WEB (MVC)
 │       │   ├── src/main/java/com/desafiosea/todo/web/
-│       │   │   ├── action/         # Controllers (MVCActionCommand)
-│       │   │   ├── render/         # Views (MVCRenderCommand)
-│       │   │   ├── service/        # Serviços auxiliares
+│       │   │   ├── action/
+│       │   │   │   ├── AddTaskMVCActionCommand.java
+│       │   │   │   ├── UpdateTaskMVCActionCommand.java
+│       │   │   │   ├── DeleteTaskMVCActionCommand.java
+│       │   │   │   └── ToggleTaskStatusMVCActionCommand.java
+│       │   │   │
+│       │   │   ├── render/
+│       │   │   │   ├── TaskViewRenderCommand.java
+│       │   │   │   ├── TaskFormRenderCommand.java
+│       │   │   │   └── EditTaskRenderCommand.java
+│       │   │   │
+│       │   │   ├── service/
+│       │   │   │   ├── TaskActionFeedbackService.java
+│       │   │   │   ├── TaskImageUploadService.java
+│       │   │   │   └── impl/
+│       │   │   │
 │       │   │   ├── constants/
 │       │   │   └── portlet/
 │       │   │
-│       │   ├── src/main/resources/META-INF/resources/
-│       │   │   ├── css/
-│       │   │   ├── view.jsp
-│       │   │   └── task_form.jsp
+│       │   ├── src/main/resources/
+│       │   │   ├── META-INF/resources/
+│       │   │   │   ├── css/
+│       │   │   │   │   └── main.css
+│       │   │   │   ├── init.jsp
+│       │   │   │   ├── view.jsp
+│       │   │   │   └── task_form.jsp
+│       │   │   │
+│       │   │   └── content/
+│       │   │       └── Language.properties
 │       │   │
 │       │   ├── src/test/java/
 │       │   ├── bnd.bnd
@@ -514,6 +496,8 @@ desafio-liferay/
 ├── .gitignore
 ├── build.gradle
 └── README.md
+```
+
 
 ## 📈 Melhorias futuras
 
