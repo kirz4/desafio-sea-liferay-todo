@@ -5,22 +5,12 @@ import com.desafiosea.todo.exception.TaskTitleRequiredException;
 import com.desafiosea.todo.exception.TaskTitleSizeException;
 import com.desafiosea.todo.service.TaskLocalService;
 import com.desafiosea.todo.web.constants.TodoPortletKeys;
-import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.desafiosea.todo.web.service.TaskActionFeedbackService;
+import com.desafiosea.todo.web.service.TaskImageUploadService;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.ServiceContextFactory;
-import com.liferay.portal.kernel.servlet.SessionErrors;
-import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.upload.UploadPortletRequest;
-import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-
-import java.io.File;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -47,12 +37,13 @@ public class AddTaskMVCActionCommand implements MVCActionCommand {
 
 			User user = themeDisplay.getUser();
 
-			String title = ParamUtil.getString(actionRequest, "title");
-			String description = ParamUtil.getString(actionRequest, "description");
-			boolean done = ParamUtil.getBoolean(actionRequest, "done");
-			long parentTaskId = ParamUtil.getLong(actionRequest, "parentTaskId", 0L);
+			String title = _getString(actionRequest, "title");
+			String description = _getString(actionRequest, "description");
+			boolean done = _getBoolean(actionRequest, "done");
+			long parentTaskId = _getLong(actionRequest, "parentTaskId", 0L);
 
-			long fileEntryId = _uploadTaskImage(actionRequest, themeDisplay);
+			long fileEntryId = _taskImageUploadService.uploadTaskImage(
+				actionRequest, themeDisplay);
 
 			_taskLocalService.addTask(
 				user.getUserId(),
@@ -66,85 +57,64 @@ public class AddTaskMVCActionCommand implements MVCActionCommand {
 			return true;
 		}
 		catch (TaskTitleRequiredException e) {
-			SessionErrors.add(actionRequest, "task-title-required");
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-title-required");
 		}
 		catch (TaskTitleSizeException e) {
-			SessionErrors.add(actionRequest, "task-title-size");
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-title-size");
 		}
 		catch (TaskDescriptionSizeException e) {
-			SessionErrors.add(actionRequest, "task-description-size");
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-description-size");
 		}
 		catch (Exception e) {
-			SessionErrors.add(actionRequest, "task-add-error");
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-add-error");
 		}
 
-		SessionMessages.add(
-			actionRequest,
-			PortalUtil.getPortletId(actionRequest) +
-				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
-
-		actionResponse.setRenderParameter("mvcRenderCommandName", "/task/form");
-		actionResponse.setRenderParameter(
-			"title", ParamUtil.getString(actionRequest, "title"));
-		actionResponse.setRenderParameter(
-			"description", ParamUtil.getString(actionRequest, "description"));
-		actionResponse.setRenderParameter(
-			"done", String.valueOf(ParamUtil.getBoolean(actionRequest, "done")));
-		actionResponse.setRenderParameter(
-			"filter", ParamUtil.getString(actionRequest, "filter", "all"));
-		actionResponse.setRenderParameter(
-			"parentTaskId",
-			String.valueOf(ParamUtil.getLong(actionRequest, "parentTaskId", 0L)));
+		_taskActionFeedbackService.hideDefaultErrorMessage(actionRequest);
+		_taskActionFeedbackService.prepareFormRender(
+			actionRequest, actionResponse);
 
 		return true;
 	}
 
-	private long _uploadTaskImage(
-		ActionRequest actionRequest, ThemeDisplay themeDisplay) throws Exception {
+	private boolean _getBoolean(ActionRequest actionRequest, String name) {
+		String value = actionRequest.getParameter(name);
 
-		UploadPortletRequest uploadPortletRequest =
-			PortalUtil.getUploadPortletRequest(actionRequest);
+		return "true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value);
+	}
 
-		File file = uploadPortletRequest.getFile("taskImage");
-		String fileName = uploadPortletRequest.getFileName("taskImage");
-		String contentType = uploadPortletRequest.getContentType("taskImage");
+	private long _getLong(
+		ActionRequest actionRequest, String name, long defaultValue) {
 
-		if ((file == null) || (file.length() == 0) ||
-			(fileName == null) || fileName.isEmpty()) {
+		String value = actionRequest.getParameter(name);
 
-			return 0L;
+		if ((value == null) || value.trim().isEmpty()) {
+			return defaultValue;
 		}
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			ActionRequest.class.getName(), actionRequest);
+		try {
+			return Long.parseLong(value);
+		}
+		catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
 
-		serviceContext.setAddGroupPermissions(true);
-		serviceContext.setAddGuestPermissions(true);
+	private String _getString(ActionRequest actionRequest, String name) {
+		String value = actionRequest.getParameter(name);
 
-		FileEntry fileEntry = _dlAppLocalService.addFileEntry(
-			null,
-			themeDisplay.getUserId(),
-			themeDisplay.getScopeGroupId(),
-			0,
-			fileName,
-			contentType != null ? contentType : ContentTypes.APPLICATION_OCTET_STREAM,
-			fileName,
-			null,
-			"Tarefa - imagem anexada",
-			"",
-			file,
-			null,
-			null,
-			null,
-			serviceContext);
-
-		return fileEntry.getFileEntryId();
+		return value == null ? "" : value;
 	}
 
 	@Reference
-	private DLAppLocalService _dlAppLocalService;
+	private TaskActionFeedbackService _taskActionFeedbackService;
+
+	@Reference
+	private TaskImageUploadService _taskImageUploadService;
 
 	@Reference
 	private TaskLocalService _taskLocalService;
-
 }

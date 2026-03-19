@@ -1,5 +1,6 @@
 plugins {
 	id "java-library"
+	id "jacoco"
 }
 
 apply plugin: "biz.aQute.bnd.builder"
@@ -12,6 +13,32 @@ dependencies {
 	compileOnly group: "com.liferay.portal", name: "release.portal.api", version: liferayPortalVersion
 
 	compileOnly project(":modules:todo:todo-api")
+	implementation project(":modules:todo:todo-service")
+
+	testImplementation project(":modules:todo:todo-api")
+	testImplementation group: "com.liferay.portal", name: "release.portal.api", version: liferayPortalVersion
+	testImplementation group: "junit", name: "junit", version: "4.13.2"
+	testImplementation group: "org.mockito", name: "mockito-core", version: "5.11.0"
+	testImplementation group: "org.mockito", name: "mockito-inline", version: "5.2.0"
 
 	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
+}
+
+test {
+	useJUnit()
+
+	jvmArgs(
+		"--add-opens=java.base/java.lang=ALL-UNNAMED",
+		"--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+		"--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+		"--add-opens=java.base/java.util=ALL-UNNAMED"
+	)
+}
+jacocoTestReport {
+	dependsOn test
+
+	reports {
+		xml.required = true
+		html.required = true
+	}
 }

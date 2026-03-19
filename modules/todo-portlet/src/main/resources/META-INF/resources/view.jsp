@@ -262,7 +262,7 @@ String namespace = renderResponse.getNamespace();
 	}
 
 	const tabs = tabsContainer.querySelectorAll('.task-tab');
-	const items = document.querySelectorAll('.task-item, .subtask-item');
+	const taskItems = document.querySelectorAll('.task-item');
 	const editLinks = document.querySelectorAll('.task-edit-link');
 	const filterInputs = document.querySelectorAll('.task-filter-input');
 
@@ -286,15 +286,41 @@ String namespace = renderResponse.getNamespace();
 		});
 	}
 
-	function applyFilter(filter) {
-		items.forEach(function(item) {
-			const status = item.getAttribute('data-status');
+	function matchesFilter(status, filter) {
+		return filter === 'all' || status === filter;
+	}
 
-			if (filter === 'all' || status === filter) {
-				item.style.display = '';
+	function applyFilter(filter) {
+		taskItems.forEach(function(taskItem) {
+			const taskStatus = taskItem.getAttribute('data-status');
+			const subtaskItems = taskItem.querySelectorAll('.subtask-item');
+			const subtaskList = taskItem.querySelector('.subtask-list');
+
+			let taskMatches = matchesFilter(taskStatus, filter);
+			let hasVisibleSubtask = false;
+
+			subtaskItems.forEach(function(subtaskItem) {
+				const subtaskStatus = subtaskItem.getAttribute('data-status');
+				const subtaskMatches = matchesFilter(subtaskStatus, filter);
+
+				if (subtaskMatches) {
+					subtaskItem.style.display = '';
+					hasVisibleSubtask = true;
+				}
+				else {
+					subtaskItem.style.display = 'none';
+				}
+			});
+
+			if (subtaskList) {
+				subtaskList.style.display = hasVisibleSubtask ? '' : 'none';
+			}
+
+			if (taskMatches || hasVisibleSubtask) {
+				taskItem.style.display = '';
 			}
 			else {
-				item.style.display = 'none';
+				taskItem.style.display = 'none';
 			}
 		});
 

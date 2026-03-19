@@ -29,3 +29,10 @@ bundles/routes/
 # Arquivos locais
 gradle-local.properties
 bundles/startup-todo.log
+bundles/
+*.log
+
+bundles/
+*.log
+liferay-threaddump.txt
+startup-*.log

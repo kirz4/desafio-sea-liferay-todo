@@ -1,6 +1,7 @@
 plugins {
 	id "java-library"
 	id "com.liferay.portal.tools.service.builder" version "4.0.189"
+	id "jacoco"
 }
 
 apply plugin: "biz.aQute.bnd.builder"
@@ -31,6 +32,29 @@ test {
 		"--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
 		"--add-opens=java.base/java.util=ALL-UNNAMED"
 	)
+
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				"com/desafiosea/todo/model/impl/**",
+				"com/desafiosea/todo/service/base/**",
+				"com/desafiosea/todo/service/persistence/impl/**",
+				"com/desafiosea/todo/service/persistence/impl/constants/**"
+			])
+		}))
+	}
+
+	reports {
+		xml.required = true
+		html.required = true
+		csv.required = false
+	}
 }
 
 group = "com.desafiosea.todo"
