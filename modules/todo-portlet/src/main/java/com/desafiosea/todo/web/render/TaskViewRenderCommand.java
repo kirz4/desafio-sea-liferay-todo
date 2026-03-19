@@ -12,8 +12,6 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,68 +33,87 @@ import org.osgi.service.component.annotations.Reference;
 public class TaskViewRenderCommand implements MVCRenderCommand {
 
 	@Override
-	public String render(RenderRequest renderRequest, RenderResponse renderResponse) {
+	public String render(
+		RenderRequest renderRequest, RenderResponse renderResponse) {
+
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		User user = themeDisplay.getUser();
 
-		List<Task> allTasks = Collections.emptyList();
-		List<Task> rootTasks = Collections.emptyList();
-		List<Task> doneTasks = new ArrayList<>();
-		List<Task> pendingTasks = new ArrayList<>();
+		String filter = ParamUtil.getString(renderRequest, "filter", "all");
+
+		List<Task> rootTasks = _taskLocalService.getRootTasksByUserId(
+			user.getUserId());
 
 		Map<Long, List<Task>> subtasksByParentTaskId = new HashMap<>();
 		Map<Long, String> taskImageUrls = new HashMap<>();
 
-		String filter = ParamUtil.getString(renderRequest, "filter", "all");
+		int totalCount = 0;
+		int pendingCount = 0;
+		int doneCount = 0;
 
-		if (user != null) {
-			long userId = user.getUserId();
+		for (Task rootTask : rootTasks) {
+			totalCount++;
 
-			allTasks = _taskLocalService.getTasksByUserId(userId);
-			rootTasks = _taskLocalService.getRootTasksByUserId(userId);
-
-			for (Task task : allTasks) {
-				if (task.isDone()) {
-					doneTasks.add(task);
-				}
-				else {
-					pendingTasks.add(task);
-				}
-
-				if (task.getFileEntryId() > 0) {
-					try {
-						FileEntry fileEntry = _dlAppLocalService.getFileEntry(
-							task.getFileEntryId());
-
-						String imageURL = _dlURLHelper.getPreviewURL(
-							fileEntry, fileEntry.getFileVersion(), themeDisplay, "");
-
-						taskImageUrls.put(task.getTaskId(), imageURL);
-					}
-					catch (Exception e) {
-					}
-				}
+			if (rootTask.isDone()) {
+				doneCount++;
+			}
+			else {
+				pendingCount++;
 			}
 
-			for (Task rootTask : rootTasks) {
-				List<Task> subtasks = _taskLocalService.getSubtasksByParentTaskId(
-					userId, rootTask.getTaskId());
+			_addTaskImageUrl(rootTask, taskImageUrls, themeDisplay);
 
-				subtasksByParentTaskId.put(rootTask.getTaskId(), subtasks);
+			List<Task> subtasks = _taskLocalService.getSubtasksByParentTaskId(
+				user.getUserId(), rootTask.getTaskId());
+
+			subtasksByParentTaskId.put(rootTask.getTaskId(), subtasks);
+
+			for (Task subtask : subtasks) {
+				totalCount++;
+
+				if (subtask.isDone()) {
+					doneCount++;
+				}
+				else {
+					pendingCount++;
+				}
+
+				_addTaskImageUrl(subtask, taskImageUrls, themeDisplay);
 			}
 		}
 
 		renderRequest.setAttribute("rootTasks", rootTasks);
-		renderRequest.setAttribute("subtasksByParentTaskId", subtasksByParentTaskId);
+		renderRequest.setAttribute(
+			"subtasksByParentTaskId", subtasksByParentTaskId);
 		renderRequest.setAttribute("taskImageUrls", taskImageUrls);
-		renderRequest.setAttribute("totalCount", allTasks.size());
-		renderRequest.setAttribute("doneCount", doneTasks.size());
-		renderRequest.setAttribute("pendingCount", pendingTasks.size());
+		renderRequest.setAttribute("totalCount", totalCount);
+		renderRequest.setAttribute("pendingCount", pendingCount);
+		renderRequest.setAttribute("doneCount", doneCount);
 		renderRequest.setAttribute("currentFilter", filter);
 
 		return "/view.jsp";
+	}
+
+	private void _addTaskImageUrl(
+		Task task, Map<Long, String> taskImageUrls, ThemeDisplay themeDisplay) {
+
+		if (task.getFileEntryId() <= 0) {
+			return;
+		}
+
+		try {
+			FileEntry fileEntry = _dlAppLocalService.getFileEntry(
+				task.getFileEntryId());
+
+			String imageURL = _dlURLHelper.getPreviewURL(
+				fileEntry, fileEntry.getFileVersion(), themeDisplay, "");
+
+			taskImageUrls.put(task.getTaskId(), imageURL);
+		}
+		catch (Exception e) {
+		}
 	}
 
 	@Reference

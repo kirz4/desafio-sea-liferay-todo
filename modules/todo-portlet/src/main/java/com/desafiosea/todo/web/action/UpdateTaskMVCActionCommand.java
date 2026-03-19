@@ -7,22 +7,14 @@ import com.desafiosea.todo.exception.TaskTitleSizeException;
 import com.desafiosea.todo.model.Task;
 import com.desafiosea.todo.service.TaskLocalService;
 import com.desafiosea.todo.web.constants.TodoPortletKeys;
-import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.desafiosea.todo.web.service.TaskActionFeedbackService;
+import com.desafiosea.todo.web.service.TaskImageUploadService;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.ServiceContextFactory;
-import com.liferay.portal.kernel.servlet.SessionErrors;
-import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.upload.UploadPortletRequest;
-import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-
-import java.io.File;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -43,109 +35,166 @@ public class UpdateTaskMVCActionCommand implements MVCActionCommand {
 	public boolean processAction(
 		ActionRequest actionRequest, ActionResponse actionResponse) {
 
+		long taskId = _getLong(actionRequest, "taskId", 0L);
+		String title = _getString(actionRequest, "title");
+		String description = _getString(actionRequest, "description");
+		boolean done = _getBoolean(actionRequest, "done");
+
+		if (_log.isInfoEnabled()) {
+			_log.info("Iniciando atualização da tarefa");
+			_log.info("taskId=" + taskId);
+			_log.info("title=" + title);
+			_log.info("descriptionLength=" + description.length());
+			_log.info("done=" + done);
+		}
+
 		try {
 			ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
+			if (themeDisplay == null) {
+				_log.error("ThemeDisplay veio nulo no update da tarefa");
+				throw new IllegalStateException("ThemeDisplay não encontrado");
+			}
+
 			User user = themeDisplay.getUser();
 
-			long taskId = ParamUtil.getLong(actionRequest, "taskId");
-			String title = ParamUtil.getString(actionRequest, "title");
-			String description = ParamUtil.getString(actionRequest, "description");
-			boolean done = ParamUtil.getBoolean(actionRequest, "done");
+			if (user == null) {
+				_log.error("User veio nulo no update da tarefa");
+				throw new IllegalStateException("Usuário não encontrado");
+			}
+
+			if (_log.isInfoEnabled()) {
+				_log.info("userId=" + user.getUserId());
+				_log.info("scopeGroupId=" + themeDisplay.getScopeGroupId());
+				_log.info("Buscando tarefa atual no banco");
+			}
 
 			Task task = _taskLocalService.getTask(taskId);
 
-			long fileEntryId = _uploadTaskImage(actionRequest, themeDisplay);
+			if (_log.isInfoEnabled()) {
+				_log.info(
+					"Tarefa encontrada. taskId=" + task.getTaskId() +
+						", fileEntryId atual=" + task.getFileEntryId());
+				_log.info("Tentando upload de nova imagem");
+			}
+
+			long uploadedFileEntryId = _taskImageUploadService.uploadTaskImage(
+				actionRequest, themeDisplay);
+
+			if (_log.isInfoEnabled()) {
+				_log.info("Resultado do upload. uploadedFileEntryId=" + uploadedFileEntryId);
+			}
+
+			long fileEntryId = uploadedFileEntryId;
 
 			if (fileEntryId == 0L) {
 				fileEntryId = task.getFileEntryId();
+
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"Nenhuma nova imagem enviada. Mantendo fileEntryId atual=" +
+							fileEntryId);
+				}
+			}
+			else if (_log.isInfoEnabled()) {
+				_log.info("Nova imagem enviada. Novo fileEntryId=" + fileEntryId);
+			}
+
+			if (_log.isInfoEnabled()) {
+				_log.info("Chamando taskLocalService.updateTask(...)");
 			}
 
 			_taskLocalService.updateTask(
 				user.getUserId(), taskId, title, description, done, fileEntryId);
 
+			if (_log.isInfoEnabled()) {
+				_log.info("Tarefa atualizada com sucesso");
+			}
+
 			return true;
 		}
 		catch (TaskTitleRequiredException e) {
-			SessionErrors.add(actionRequest, "task-title-required");
+			_log.error("Erro de validação: título obrigatório", e);
+
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-title-required");
 		}
 		catch (TaskTitleSizeException e) {
-			SessionErrors.add(actionRequest, "task-title-size");
+			_log.error("Erro de validação: tamanho do título inválido", e);
+
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-title-size");
 		}
 		catch (TaskDescriptionSizeException e) {
-			SessionErrors.add(actionRequest, "task-description-size");
+			_log.error("Erro de validação: descrição muito longa", e);
+
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-description-size");
 		}
 		catch (TaskPermissionException e) {
-			SessionErrors.add(actionRequest, "task-permission-denied");
+			_log.error("Erro de permissão ao atualizar tarefa", e);
+
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-permission-denied");
 		}
 		catch (Exception e) {
-			SessionErrors.add(actionRequest, "task-update-error");
+			_log.error("Erro inesperado ao atualizar tarefa", e);
+
+			_taskActionFeedbackService.addError(
+				actionRequest, "task-update-error");
 		}
 
-		SessionMessages.add(
-			actionRequest,
-			PortalUtil.getPortletId(actionRequest) +
-				SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+		_taskActionFeedbackService.hideDefaultErrorMessage(actionRequest);
+		_taskActionFeedbackService.prepareFormRender(
+			actionRequest, actionResponse);
 
-		actionResponse.setRenderParameter("mvcRenderCommandName", "/task/edit-form");
 		actionResponse.setRenderParameter(
-			"taskId", String.valueOf(ParamUtil.getLong(actionRequest, "taskId")));
+			"mvcRenderCommandName", "/task/edit-form");
 		actionResponse.setRenderParameter(
-			"title", ParamUtil.getString(actionRequest, "title"));
-		actionResponse.setRenderParameter(
-			"description", ParamUtil.getString(actionRequest, "description"));
-		actionResponse.setRenderParameter(
-			"done", String.valueOf(ParamUtil.getBoolean(actionRequest, "done")));
-		actionResponse.setRenderParameter(
-			"filter", ParamUtil.getString(actionRequest, "filter", "all"));
+			"taskId", String.valueOf(taskId));
 
 		return true;
 	}
 
-	private long _uploadTaskImage(
-		ActionRequest actionRequest, ThemeDisplay themeDisplay) throws Exception {
+	private boolean _getBoolean(ActionRequest actionRequest, String name) {
+		String value = actionRequest.getParameter(name);
 
-		UploadPortletRequest uploadPortletRequest =
-			PortalUtil.getUploadPortletRequest(actionRequest);
-
-		File file = uploadPortletRequest.getFile("taskImage");
-		String fileName = uploadPortletRequest.getFileName("taskImage");
-		String contentType = uploadPortletRequest.getContentType("taskImage");
-
-		if ((file == null) || (file.length() == 0) || (fileName == null) || fileName.isEmpty()) {
-			return 0L;
-		}
-
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			ActionRequest.class.getName(), actionRequest);
-		serviceContext.setAddGroupPermissions(true);
-		serviceContext.setAddGuestPermissions(true);
-
-		FileEntry fileEntry = _dlAppLocalService.addFileEntry(
-			null,
-			themeDisplay.getUserId(),
-			themeDisplay.getScopeGroupId(),
-			0,
-			fileName,
-			contentType != null ? contentType : ContentTypes.APPLICATION_OCTET_STREAM,
-			fileName,
-			null,
-			"Tarefa - imagem anexada",
-			"",
-			file,
-			null,
-			null,
-			null,
-			serviceContext);
-
-		return fileEntry.getFileEntryId();
+		return "true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value);
 	}
 
+	private long _getLong(
+		ActionRequest actionRequest, String name, long defaultValue) {
+
+		String value = actionRequest.getParameter(name);
+
+		if ((value == null) || value.trim().isEmpty()) {
+			return defaultValue;
+		}
+
+		try {
+			return Long.parseLong(value);
+		}
+		catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
+	private String _getString(ActionRequest actionRequest, String name) {
+		String value = actionRequest.getParameter(name);
+
+		return value == null ? "" : value;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		UpdateTaskMVCActionCommand.class);
+
 	@Reference
-	private DLAppLocalService _dlAppLocalService;
+	private TaskActionFeedbackService _taskActionFeedbackService;
+
+	@Reference
+	private TaskImageUploadService _taskImageUploadService;
 
 	@Reference
 	private TaskLocalService _taskLocalService;
-
 }
