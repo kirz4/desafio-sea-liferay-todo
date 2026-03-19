@@ -392,28 +392,6 @@ bundles/
 
 ---
 
-## 💡 Pontos fortes para entrevista
-
-Este projeto permite demonstrar experiência prática em:
-
-- arquitetura modular com Liferay
-- separação clara de responsabilidades
-- refatoração para melhorar testabilidade
-- resolução de bugs reais de infraestrutura e upload
-- testes unitários com mocks
-- tratamento de erros
-- raciocínio sobre UI + backend
-- debugging com logs e thread dump
-
-### Exemplos concretos que podem ser citados
-- resolução do problema de `DuplicateFileEntryException`
-- correção da renderização e filtro de subtarefas
-- isolamento da lógica de upload em serviço próprio
-- refatoração dos MVCActionCommands para facilitar testes
-- diagnóstico de travamento do ambiente por Elasticsearch sidecar
-
----
-
 # 📂 Estrutura completa do projeto
 
 ```text
