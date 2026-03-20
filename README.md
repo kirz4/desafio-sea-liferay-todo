@@ -359,6 +359,40 @@ Isso foi importante para estabilizar o ambiente de desenvolvimento.
 
 ---
 
+## 🔐 Primeiro acesso ao sistema
+
+Ao iniciar o Liferay pela primeira vez, será exibido automaticamente o **setup inicial (wizard)**.
+
+1. Acesse:
+```
+http://localhost:8080
+```
+
+2. Preencha as informações solicitadas (nome, email e senha)
+
+3. O usuário criado nesse processo será automaticamente configurado como **administrador (Omniadmin)**
+
+---
+
+## 🧩 Acessando a aplicação
+
+Após realizar o login:
+
+1. Clique em **"Add" → "Widget" → "Custom"**
+2. Localize a portlet do projeto
+3. Adicione na página
+4. Comece a utilizar o sistema de tarefas
+
+---
+
+## 💡 Observação
+
+Caso o setup inicial não apareça:
+
+- verifique se já existe uma base previamente configurada
+- ou utilize um usuário existente com permissões administrativas
+
+
 ## ✅ Como rodar os testes
 
 ### Testes do service
@@ -377,17 +411,6 @@ Isso foi importante para estabilizar o ambiente de desenvolvimento.
 
 ```bash
 ./gradlew :modules:todo:todo-service:test :modules:todo:todo-portlet:test --no-daemon
-```
-
----
-
-## 📂 Estrutura útil do projeto
-
-```text
-modules/todo/todo-api
-modules/todo/todo-service
-modules/todo-portlet
-bundles/
 ```
 
 ---
